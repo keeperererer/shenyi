@@ -4,6 +4,8 @@ import Index from "@/components/index";
 import Login from "@/components/user/login";
 import Category from "@/components/category/category";
 import Production from "@/components/production/production";
+import Home from "@/components/home";
+
 Vue.use(Router);
 export default new Router({
   routes: [
@@ -12,6 +14,11 @@ export default new Router({
       name: "Index",
       component: Index,
       children: [
+        {
+          path: "",
+          name: "Home",
+          component: Home
+        },
         {
           path: "Category",
           name: "Category",

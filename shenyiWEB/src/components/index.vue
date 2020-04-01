@@ -4,12 +4,8 @@
     <Layout>
       <Layout>
         <Sider hide-trigger :style="{ background: '#fff' }">
-          <Menu
-            active-name="1-2"
-            theme="light"
-            width="auto"
-            :open-names="['1']"
-          >
+          <Menu theme="light" width="auto" :open-names="['1']">
+            <MenuItem name="1-0" to="/">管理平台</MenuItem>
             <MenuItem name="1-1" to="/Category">分类管理</MenuItem>
             <MenuItem name="1-2" to="/Production">产品管理</MenuItem>
           </Menu>
