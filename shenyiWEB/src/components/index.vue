@@ -6,8 +6,18 @@
         <Sider hide-trigger :style="{ background: '#fff' }">
           <Menu theme="light" width="auto" :open-names="['1']">
             <MenuItem name="1-0" to="/">管理平台</MenuItem>
-            <MenuItem name="1-1" to="/Category">分类管理</MenuItem>
-            <MenuItem name="1-2" to="/Production">产品管理</MenuItem>
+            <MenuItem name="1-1" to="/Category"
+              ><Icon type="ios-bookmark" />分类</MenuItem
+            >
+            <!-- <MenuItem name="1-2" to="/Production">产品管理</MenuItem> -->
+            <Submenu name="2">
+              <template slot="title">
+                <Icon type="ios-navigate"></Icon>
+                产品
+              </template>
+              <MenuItem name="2-1" to="/addProduction">添加产品</MenuItem>
+              <MenuItem name="2-2" to="/Production">产品管理</MenuItem>
+            </Submenu>
           </Menu>
         </Sider>
         <Layout :style="{ padding: '0 24px 24px' }">
@@ -22,7 +32,7 @@
   </div>
 </template>
 <script>
-import { Layout, Sider, Menu, MenuItem } from "view-design";
+import { Layout, Sider, Menu, MenuItem, Submenu, Icon } from "view-design";
 import Top from "@/components/top";
 export default {
   components: {
@@ -30,7 +40,9 @@ export default {
     Layout,
     Sider,
     Menu,
-    MenuItem
+    MenuItem,
+    Submenu,
+    Icon
   }
 };
 </script>

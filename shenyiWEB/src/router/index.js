@@ -4,6 +4,7 @@ import Index from "@/components/index";
 import Login from "@/components/user/login";
 import Category from "@/components/category/category";
 import Production from "@/components/production/production";
+import addProduction from "@/components/production/addProduction";
 import Home from "@/components/home";
 
 Vue.use(Router);
@@ -28,6 +29,11 @@ export default new Router({
           path: "Production",
           name: "Production",
           component: Production
+        },
+        {
+          path: "addProduction",
+          name: "addProduction",
+          component: addProduction
         }
       ]
     },
