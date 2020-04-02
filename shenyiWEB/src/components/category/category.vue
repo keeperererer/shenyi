@@ -13,9 +13,9 @@
           <Option :value="topCate">{{ topCate }}</Option>
           <OptionGroup label="为以下分类添加下级">
             <Option
-              v-for="item in cates"
+              v-for="(item, index) in cates"
               :value="item.value"
-              :key="item.value"
+              :key="index"
               >{{ item.label }}</Option
             >
           </OptionGroup>

@@ -4,14 +4,18 @@
       ref="formValidate"
       :model="formValidate"
       :rules="ruleValidate"
-      :label-width="100"
+      :label-width="150"
     >
       <FormItem label="叶级分类" prop="city">
-        <Select v-model="formValidate.city" placeholder="选择产品的叶级分类...">
+        <Select
+          v-model="formValidate.city"
+          placeholder="选择产品的叶级分类..."
+          filterable
+        >
           <Option
-            v-for="item in catesTail"
+            v-for="(item, index) in catesTail"
             :value="item.value"
-            :key="item.value"
+            :key="index"
             >{{ item.label }}</Option
           >
         </Select>
@@ -61,6 +65,36 @@
           placeholder="输入ERP物料编码"
         ></Input>
       </FormItem>
+      <FormItem label="是否上传详细文件">
+        <Checkbox
+          v-model="formValidate.check"
+          label="是否上传详细文件"
+          @on-change="checkStatus"
+        ></Checkbox>
+        <Upload
+          action="//jsonplaceholder.typicode.com/posts/"
+          show-upload-list
+          :disabled="formValidate.disabled"
+          :format="['xlsx', 'docx', 'pdf']"
+        >
+          <Button icon="ios-cloud-upload-outline">上传文件</Button>
+        </Upload>
+      </FormItem>
+      <FormItem label="上传产品实例图">
+        <Upload
+          multiple
+          show-upload-list
+          type="drag"
+          action="//jsonplaceholder.typicode.com/posts/"
+          :format="['jpg', 'jpeg', 'png']"
+          :on-format-error="handleFormatError"
+        >
+          <div style="padding: 20px 0">
+            <Icon type="ios-camera" size="52" style="color: #3399ff"></Icon>
+            <p>点击或者拖拽到此处上传</p>
+          </div>
+        </Upload>
+      </FormItem>
       <FormItem>
         <Button type="primary" @click="handleSubmit('formValidate')"
           >添加</Button
@@ -73,7 +107,17 @@
   </div>
 </template>
 <script>
-import { Form, FormItem, Select, Option, Input, Button } from "view-design";
+import {
+  Form,
+  FormItem,
+  Select,
+  Option,
+  Input,
+  Button,
+  Checkbox,
+  Upload,
+  Icon
+} from "view-design";
 export default {
   components: {
     Form,
@@ -81,7 +125,10 @@ export default {
     Select,
     Option,
     Input,
-    Button
+    Button,
+    Checkbox,
+    Upload,
+    Icon
   },
   data() {
     return {
@@ -105,7 +152,9 @@ export default {
         surfaceTreat: "",
         texture: "",
         ERPclass: "",
-        ERPcode: ""
+        ERPcode: "",
+        check: false,
+        disabled: true
       },
       ruleValidate: {
         name: [
@@ -137,6 +186,28 @@ export default {
     },
     handleReset(name) {
       this.$refs[name].resetFields();
+    },
+    change(status) {
+      this.$Message.info("开关状态：" + status);
+    },
+    checkStatus() {
+      if (this.formValidate.check) {
+        this.formValidate.disabled = false;
+      } else {
+        this.formValidate.disabled = true;
+      }
+    },
+    handleSuccess() {
+      this.$Message.info("上传成功");
+    },
+    handleFormatError(file) {
+      this.$Notice.warning({
+        title: "The file format is incorrect",
+        desc:
+          "File format of " +
+          file.name +
+          " is incorrect, please select jpg or png."
+      });
     }
   }
 };
