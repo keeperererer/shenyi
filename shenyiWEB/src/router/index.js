@@ -23,17 +23,26 @@ export default new Router({
         {
           path: "Category",
           name: "Category",
-          component: Category
+          component: Category,
+          meta: {
+            order: "1-1"
+          }
         },
         {
           path: "Production",
           name: "Production",
-          component: Production
+          component: Production,
+          meta: {
+            order: "2-2"
+          }
         },
         {
           path: "addProduction",
           name: "addProduction",
-          component: addProduction
+          component: addProduction,
+          meta: {
+            order: "2-1"
+          }
         }
       ]
     },

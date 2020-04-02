@@ -4,8 +4,13 @@
     <Layout>
       <Layout>
         <Sider hide-trigger :style="{ background: '#fff' }">
-          <Menu theme="light" width="auto" :open-names="['1']">
-            <MenuItem name="1-0" to="/">管理平台</MenuItem>
+          <Menu
+            theme="light"
+            width="auto"
+            :open-names="openNames"
+            :active-name="activeName"
+          >
+            <!-- <MenuItem name="1-0" to="/">管理平台</MenuItem> -->
             <MenuItem name="1-1" to="/Category"
               ><Icon type="ios-bookmark" />分类</MenuItem
             >
@@ -22,7 +27,7 @@
         </Sider>
         <Layout :style="{ padding: '0 24px 24px' }">
           <Content
-            :style="{ padding: '24px', minHeight: '280px', background: '#fff' }"
+            :style="{ padding: '24px', minHeight: '580px', background: '#fff' }"
           >
             <router-view></router-view>
           </Content>
@@ -43,7 +48,20 @@ export default {
     MenuItem,
     Submenu,
     Icon
-  }
+  },
+  data() {
+    return {
+      openNames: [],
+      activeName: ""
+    };
+  },
+  created() {
+    if (this.$route.meta && this.$route.meta.order) {
+      this.activeName = this.$route.meta.order;
+      this.openNames.push(this.$route.meta.order.split("-")[0]);
+    }
+  },
+  mounted() {}
 };
 </script>
 <style scoped>

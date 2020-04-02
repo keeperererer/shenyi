@@ -1,123 +1,77 @@
 <template>
-  <Table :columns="columns" :data="data">
-    <template slot-scope="{ row, index }" slot="name">
-      <Input type="text" v-model="editName" v-if="editIndex === index" />
-      <span v-else>{{ row.name }}</span>
-    </template>
-
-    <template slot-scope="{ row, index }" slot="age">
-      <Input type="text" v-model="editAge" v-if="editIndex === index" />
-      <span v-else>{{ row.age }}</span>
-    </template>
-
-    <template slot-scope="{ row, index }" slot="birthday">
-      <Input type="text" v-model="editBirthday" v-if="editIndex === index" />
-      <span v-else>{{ getBirthday(row.birthday) }}</span>
-    </template>
-
-    <template slot-scope="{ row, index }" slot="address">
-      <Input type="text" v-model="editAddress" v-if="editIndex === index" />
-      <span v-else>{{ row.address }}</span>
-    </template>
-
-    <template slot-scope="{ row, index }" slot="action">
-      <div v-if="editIndex === index">
-        <Button @click="handleSave(index)">保存</Button>
-        <Button @click="editIndex = -1">取消</Button>
-      </div>
-      <div v-else>
-        <Button @click="handleEdit(row, index)">操作</Button>
-      </div>
-    </template>
-  </Table>
+  <div>
+    <div class="search">
+      <Input
+        v-model="value4"
+        placeholder="请输入产品标准号"
+        style="width: 200px"
+      />
+      <Button>搜索</Button>
+    </div>
+    <Table border ref="selection" :columns="columns4" :data="data1"></Table>
+    <div class="button">
+      <Button type="warning">删除</Button>
+      <Button @click="handleSelectAll(true)">全选</Button>
+      <Button @click="handleSelectAll(false)">取消选择</Button>
+    </div>
+  </div>
 </template>
 <script>
-import { Table, Button } from "view-design";
-
+import { Table, Button, Input } from "view-design";
 export default {
   components: {
     Table,
-    Button
+    Button,
+    Input
   },
   data() {
     return {
-      columns: [
+      value4: "",
+      columns4: [
         {
-          title: "姓名",
-          slot: "name"
+          type: "selection",
+          width: 60,
+          align: "center"
         },
         {
-          title: "年龄",
-          slot: "age"
+          title: "缩略图",
+          key: "img"
         },
         {
-          title: "出生日期",
-          slot: "birthday"
+          title: "名称",
+          key: "name"
         },
         {
-          title: "地址",
-          slot: "address"
+          title: "标准号",
+          key: "standardNum"
         },
         {
-          title: "操作",
-          slot: "action"
+          title: "添加时间",
+          key: "date"
         }
       ],
-      data: [
+      data1: [
         {
-          name: "王小明",
-          age: 18,
-          birthday: "919526400000",
-          address: "北京市朝阳区芍药居"
-        },
-        {
-          name: "张小刚",
-          age: 25,
-          birthday: "696096000000",
-          address: "北京市海淀区西二旗"
-        },
-        {
-          name: "李小红",
-          age: 30,
-          birthday: "563472000000",
-          address: "上海市浦东新区世纪大道"
-        },
-        {
-          name: "周小伟",
-          age: 26,
-          birthday: "687024000000",
-          address: "深圳市南山区深南大道"
+          img: "John Brown",
+          name: "test",
+          standardNum: "11",
+          date: "2016-10-03"
         }
-      ],
-      editIndex: -1, // 当前聚焦的输入框的行数
-      editName: "", // 第一列输入框，当然聚焦的输入框的输入内容，与 data 分离避免重构的闪烁
-      editAge: "", // 第二列输入框
-      editBirthday: "", // 第三列输入框
-      editAddress: "" // 第四列输入框
+      ]
     };
   },
   methods: {
-    handleEdit(row, index) {
-      this.editName = row.name;
-      this.editAge = row.age;
-      this.editAddress = row.address;
-      this.editBirthday = row.birthday;
-      this.editIndex = index;
-    },
-    handleSave(index) {
-      this.data[index].name = this.editName;
-      this.data[index].age = this.editAge;
-      this.data[index].birthday = this.editBirthday;
-      this.data[index].address = this.editAddress;
-      this.editIndex = -1;
-    },
-    getBirthday(birthday) {
-      const date = new Date(parseInt(birthday));
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      return `${year}-${month}-${day}`;
+    handleSelectAll(status) {
+      this.$refs.selection.selectAll(status);
     }
   }
 };
 </script>
+<style scoped>
+.search {
+  margin-bottom: 10px;
+}
+.button {
+  margin-top: 10px;
+}
+</style>
