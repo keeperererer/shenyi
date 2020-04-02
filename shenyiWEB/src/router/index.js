@@ -5,14 +5,16 @@ import Login from "@/components/user/login";
 import Category from "@/components/category/category";
 import Production from "@/components/production/production";
 import addProduction from "@/components/production/addProduction";
+import detail from "@/components/production/productionDetail";
 import Home from "@/components/home";
+import error from "@/components/error";
 
 Vue.use(Router);
 export default new Router({
   routes: [
     {
       path: "/",
-      name: "Index",
+      // name: "Index",
       component: Index,
       children: [
         {
@@ -43,6 +45,11 @@ export default new Router({
           meta: {
             order: "2-1"
           }
+        },
+        {
+          path: "production/detail",
+          name: "detail",
+          component: detail
         }
       ]
     },
@@ -50,6 +57,10 @@ export default new Router({
       path: "/login",
       name: "Login",
       component: Login
+    },
+    {
+      path:'*',
+      component:error
     }
   ]
 });
