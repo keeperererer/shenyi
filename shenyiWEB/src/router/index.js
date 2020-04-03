@@ -23,7 +23,7 @@ export default new Router({
           component: Home
         },
         {
-          path: "Category",
+          path: "category",
           name: "Category",
           component: Category,
           meta: {
@@ -31,7 +31,7 @@ export default new Router({
           }
         },
         {
-          path: "Production",
+          path: "production",
           name: "Production",
           component: Production,
           meta: {
@@ -59,8 +59,8 @@ export default new Router({
       component: Login
     },
     {
-      path:'*',
-      component:error
+      path: "*",
+      component: error
     }
   ]
 });

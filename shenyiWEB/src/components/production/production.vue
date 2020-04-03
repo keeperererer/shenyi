@@ -8,7 +8,14 @@
       />
       <Button>搜索</Button>
     </div>
-    <Table border ref="selection" :columns="columns4" :data="data1"></Table>
+    <Table
+      border
+      ref="selection"
+      :columns="columns4"
+      :data="data1"
+      @on-row-click="detailOnClick"
+    >
+    </Table>
     <div class="button">
       <Button type="warning">删除</Button>
       <Button @click="handleSelectAll(true)">全选</Button>
@@ -53,8 +60,26 @@ export default {
       data1: [
         {
           img: "John Brown",
-          name: "test",
-          standardNum: "11",
+          name: "test1",
+          standardNum: "1",
+          date: "2016-10-03"
+        },
+        {
+          img: "John Brown",
+          name: "test2",
+          standardNum: "2",
+          date: "2016-10-03"
+        },
+        {
+          img: "John Brown",
+          name: "test3",
+          standardNum: "3",
+          date: "2016-10-03"
+        },
+        {
+          img: "John Brown",
+          name: "test4",
+          standardNum: "4",
           date: "2016-10-03"
         }
       ]
@@ -63,6 +88,9 @@ export default {
   methods: {
     handleSelectAll(status) {
       this.$refs.selection.selectAll(status);
+    },
+    detailOnClick(data) {
+      this.$router.push({ name: "detail", params: data.standardNum });
     }
   }
 };

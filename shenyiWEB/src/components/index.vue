@@ -11,7 +11,7 @@
             :active-name="activeName"
           >
             <!-- <MenuItem name="1-0" to="/">管理平台</MenuItem> -->
-            <MenuItem name="1-1" to="/Category"
+            <MenuItem name="1-1" to="/category"
               ><Icon type="ios-bookmark" />分类</MenuItem
             >
             <!-- <MenuItem name="1-2" to="/Production">产品管理</MenuItem> -->
@@ -21,7 +21,7 @@
                 产品
               </template>
               <MenuItem name="2-1" to="/addProduction">添加产品</MenuItem>
-              <MenuItem name="2-2" to="/Production">产品管理</MenuItem>
+              <MenuItem name="2-2" to="/production">产品管理</MenuItem>
             </Submenu>
           </Menu>
         </Sider>
