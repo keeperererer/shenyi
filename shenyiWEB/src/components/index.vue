@@ -23,6 +23,9 @@
               <MenuItem name="2-1" to="/addProduction">添加产品</MenuItem>
               <MenuItem name="2-2" to="/production">产品管理</MenuItem>
             </Submenu>
+            <MenuItem name="3-1" to="/extra"
+              ><Icon type="ios-clipboard" />附加字段</MenuItem
+            >
           </Menu>
         </Sider>
         <Layout :style="{ padding: '0 24px 24px' }">
@@ -47,12 +50,12 @@ export default {
     Menu,
     MenuItem,
     Submenu,
-    Icon
+    Icon,
   },
   data() {
     return {
       openNames: [],
-      activeName: ""
+      activeName: "",
     };
   },
   created() {
@@ -61,7 +64,7 @@ export default {
       this.openNames.push(this.$route.meta.order.split("-")[0]);
     }
   },
-  mounted() {}
+  mounted() {},
 };
 </script>
 <style scoped>
