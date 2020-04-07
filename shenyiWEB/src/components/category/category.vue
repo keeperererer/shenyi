@@ -1,171 +1,189 @@
 <template>
-  <div class="cate">
-    <Button
-      size="large"
-      icon="ios-add"
-      shape="circle"
-      class="addButton"
-      @click="show = !show"
-    ></Button>
-    <transition name="slide-fade">
-      <div class="addInput" v-show="show">
-        <Select v-model="model7" style="width: 200px;" filterable>
-          <Option :value="topCate">{{ topCate }}</Option>
-          <OptionGroup label="为以下分类添加下级">
-            <Option
-              v-for="(item, index) in downList"
-              :value="item.value"
-              :key="index"
-              >{{ item.label }}</Option
-            >
-          </OptionGroup>
-        </Select>
-        <Input
-          v-model="value4"
-          placeholder="请输入分类名..."
-          style="width: 200px;"
-        />
-        <Button>添加</Button>
-      </div>
-    </transition>
-    <Table border :columns="columns5" :data="showList"></Table>
-    <Page
-      :total="dataCount"
-      :page-size="pageSize"
-      show-total
-      @on-change="changePage"
-      show-elevator
-    ></Page>
+  <div class="category">
+    <Tree :data="data5" :render="renderContent" class="demo-tree-render"></Tree>
   </div>
 </template>
 <script>
-import {
-  Button,
-  Table,
-  Icon,
-  Input,
-  Select,
-  OptionGroup,
-  Option,
-  Page,
-} from "view-design";
-
+import { Tree, Button, Icon } from "view-design";
 export default {
   components: {
+    Tree,
     Button,
-    Table,
     Icon,
-    Input,
-    Select,
-    OptionGroup,
-    Option,
-    Page,
   },
   data() {
     return {
-      show: false,
-      totalList: [],
-      dataCount: 0, //所有数据的长度
-      pageSize: 10, //每页显示多少条
-      downList: [],
-      model7: "",
-      value4: "",
-      topCate: "顶级分类",
-      columns5: [
+      data5: [
         {
-          title: "分类id",
-          key: "seq",
-          sortable: true,
-        },
-        {
-          title: "上级分类名称",
-          key: "tid",
-        },
-        {
-          title: "分类名称",
-          key: "tname",
-        },
-        {
-          title: "创建时间",
-          key: "pid",
-          sortable: true,
-        },
-        {
-          title: "操作",
-          key: "action",
-          align: "center",
-          render: (h, params) => {
-            return h("div", [
-              h(
-                Button,
-                {
-                  props: {
-                    type: "primary",
-                  },
-                  on: {
-                    click: () => {
-                      console.log("修改");
+          title: "parent 1",
+          expand: true,
+          render: (h, { root, node, data }) => {
+            return h(
+              "span",
+              {
+                style: {
+                  display: "inline-block",
+                  width: "100%",
+                },
+              },
+              [
+                h("span", [
+                  h(Icon, {
+                    props: {
+                      type: "ios-folder-outline",
+                    },
+                    style: {
+                      marginRight: "8px",
+                    },
+                  }),
+                  h("span", data.title),
+                ]),
+                h(
+                  "span",
+                  {
+                    style: {
+                      display: "inline-block",
+                      float: "right",
+                      marginRight: "32px",
                     },
                   },
-                },
-                "修改"
-              ),
-            ]);
+                  [
+                    h(Button, {
+                      props: Object.assign({}, this.buttonProps, {
+                        icon: "ios-add",
+                        type: "primary",
+                      }),
+                      style: {
+                        width: "64px",
+                      },
+                      on: {
+                        click: () => {
+                          this.append(data);
+                        },
+                      },
+                    }),
+                  ]
+                ),
+              ]
+            );
           },
+          children: [
+            {
+              title: "child 1-1",
+              expand: true,
+              children: [
+                {
+                  title: "leaf 1-1-1",
+                  expand: true,
+                },
+                {
+                  title: "leaf 1-1-2",
+                  expand: true,
+                },
+              ],
+            },
+            {
+              title: "child 1-2",
+              expand: true,
+              children: [
+                {
+                  title: "leaf 1-2-1",
+                  expand: true,
+                },
+                {
+                  title: "leaf 1-2-1",
+                  expand: true,
+                },
+              ],
+            },
+          ],
         },
       ],
-      showList: [],
+      buttonProps: {
+        type: "default",
+        size: "small",
+      },
     };
   },
-  mounted() {
-    this.cateListAjax();
-  },
   methods: {
-    cateListAjax() {
-      let that = this;
-      this.$http.get("apis/web/getAllType", {}).then((res) => {
-        that.totalList = res.data.data;
-        that.dataCount = that.totalList.length;
-        if (that.dataCount < this.pageSize) {
-          that.showList = that.totalList;
-        } else {
-          that.showList = that.totalList.slice(0, this.pageSize);
-        }
-        console.log(res.data.data);
-      });
+    renderContent(h, { root, node, data }) {
+      return h(
+        "span",
+        {
+          style: {
+            display: "inline-block",
+            width: "100%",
+          },
+        },
+        [
+          h("span", [
+            h(Icon, {
+              props: {
+                type: "ios-paper-outline",
+              },
+              style: {
+                marginRight: "8px",
+              },
+            }),
+            h("span", data.title),
+          ]),
+          h(
+            "span",
+            {
+              style: {
+                display: "inline-block",
+                float: "right",
+                marginRight: "32px",
+              },
+            },
+            [
+              h(Button, {
+                props: Object.assign({}, this.buttonProps, {
+                  icon: "ios-add",
+                }),
+                style: {
+                  marginRight: "8px",
+                },
+                on: {
+                  click: () => {
+                    this.append(data);
+                  },
+                },
+              }),
+              h(Button, {
+                props: Object.assign({}, this.buttonProps, {
+                  icon: "ios-remove",
+                }),
+                on: {
+                  click: () => {
+                    this.remove(root, node, data);
+                  },
+                },
+              }),
+            ]
+          ),
+        ]
+      );
     },
-    changePage(index) {
-      var _start = (index - 1) * this.pageSize;
-      var _end = index * this.pageSize;
-      this.showList = this.totalList.slice(_start, _end);
+    append(data) {
+      const children = data.children || [];
+      children.push({
+        title: "appended node",
+        expand: true,
+      });
+      this.$set(data, "children", children);
+    },
+    remove(root, node, data) {
+      const parentKey = root.find((el) => el === node).parent;
+      const parent = root.find((el) => el.nodeKey === parentKey).node;
+      const index = parent.children.indexOf(data);
+      parent.children.splice(index, 1);
     },
   },
 };
 </script>
 <style scoped>
-.cate {
-  position: relative;
-}
-.ivu-btn-large {
-  font-size: 25px !important;
-}
-.addButton {
-  margin-bottom: 10px;
-}
-.addInput {
-  position: absolute;
-  top: 5px;
-  left: 50px;
-}
-.slide-fade-enter-active {
-  transition: all 0.3s ease;
-}
-.slide-fade-leave-active {
-  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.slide-fade-enter,
-.slide-fade-leave-to {
-  transform: translateX(10px);
-  opacity: 0;
-}
+/* .demo-tree-render .ivu-tree-title {
+  width: 100% ;
+} */
 </style>

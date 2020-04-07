@@ -15,4 +15,7 @@ export default {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   height: 100%;
 }
+.ivu-tree-title {
+  width: 100%;
+}
 </style>
