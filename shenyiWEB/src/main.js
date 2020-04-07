@@ -5,12 +5,17 @@ import App from "./App";
 import router from "./router";
 // import ViewUI from 'view-design';
 import "view-design/dist/styles/iview.css";
+import requstPlugin from "./request/http.js";
+
 // Vue.use(ViewUI);
 Vue.config.productionTip = false;
+Vue.use(requstPlugin);
+// Vue.prototype.$http = requstPlugin;
+
 /* eslint-disable no-new */
 new Vue({
   el: "#app",
   router,
   components: { App },
-  template: "<App/>"
+  template: "<App/>",
 });

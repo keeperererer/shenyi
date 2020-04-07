@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "shenyi",
   "version": "1.0.0",
   "description": "A Vue.js project",
   "author": "keeperererer <2249269086@qq.com>",
@@ -11,6 +11,8 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "axios": "^0.19.2",
+    "qs": "^6.9.3",
     "view-design": "^4.1.3",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"

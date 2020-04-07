@@ -9,11 +9,11 @@
     ></Button>
     <transition name="slide-fade">
       <div class="addInput" v-show="show">
-        <Select v-model="model7" style="width:200px" filterable>
+        <Select v-model="model7" style="width: 200px;" filterable>
           <Option :value="topCate">{{ topCate }}</Option>
           <OptionGroup label="为以下分类添加下级">
             <Option
-              v-for="(item, index) in cates"
+              v-for="(item, index) in downList"
               :value="item.value"
               :key="index"
               >{{ item.label }}</Option
@@ -23,12 +23,19 @@
         <Input
           v-model="value4"
           placeholder="请输入分类名..."
-          style="width: 200px"
+          style="width: 200px;"
         />
         <Button>添加</Button>
       </div>
     </transition>
-    <Table border :columns="columns5" :data="data5"></Table>
+    <Table border :columns="columns5" :data="showList"></Table>
+    <Page
+      :total="dataCount"
+      :page-size="pageSize"
+      show-total
+      @on-change="changePage"
+      show-elevator
+    ></Page>
   </div>
 </template>
 <script>
@@ -39,7 +46,8 @@ import {
   Input,
   Select,
   OptionGroup,
-  Option
+  Option,
+  Page,
 } from "view-design";
 
 export default {
@@ -50,73 +58,88 @@ export default {
     Input,
     Select,
     OptionGroup,
-    Option
+    Option,
+    Page,
   },
   data() {
     return {
       show: false,
-      cates: [
-        {
-          value: "New York",
-          label: "New York"
-        },
-        {
-          value: "London",
-          label: "London"
-        }
-      ],
+      totalList: [],
+      dataCount: 0, //所有数据的长度
+      pageSize: 10, //每页显示多少条
+      downList: [],
       model7: "",
       value4: "",
       topCate: "顶级分类",
       columns5: [
         {
           title: "分类id",
-          key: "id",
-          sortable: true
+          key: "seq",
+          sortable: true,
         },
         {
           title: "上级分类名称",
-          key: "prename"
+          key: "tid",
         },
         {
           title: "分类名称",
-          key: "name"
+          key: "tname",
         },
         {
           title: "创建时间",
-          key: "time",
-          sortable: true
-        }
+          key: "pid",
+          sortable: true,
+        },
+        {
+          title: "操作",
+          key: "action",
+          align: "center",
+          render: (h, params) => {
+            return h("div", [
+              h(
+                Button,
+                {
+                  props: {
+                    type: "primary",
+                  },
+                  on: {
+                    click: () => {
+                      console.log("修改");
+                    },
+                  },
+                },
+                "修改"
+              ),
+            ]);
+          },
+        },
       ],
-      data5: [
-        {
-          name: "John Brown",
-          age: 18,
-          address: "New York No. 1 Lake Park",
-          date: "2016-10-03"
-        },
-        {
-          name: "Jim Green",
-          age: 24,
-          address: "London No. 1 Lake Park",
-          date: "2016-10-01"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02"
-        },
-        {
-          name: "Jon Snow",
-          age: 26,
-          address: "Ottawa No. 2 Lake Park",
-          date: "2016-10-04"
-        }
-      ]
+      showList: [],
     };
   },
-  methods: {}
+  mounted() {
+    this.cateListAjax();
+  },
+  methods: {
+    cateListAjax() {
+      let that = this;
+      this.$http.get("apis/web/getAllType", {}).then((res) => {
+        that.totalList = res.data.data;
+        that.dataCount = that.totalList.length;
+        if (that.dataCount < this.pageSize) {
+          that.showList = that.totalList;
+        } else {
+          that.showList = that.totalList.slice(0, this.pageSize);
+        }
+        console.log(res.data.data);
+      });
+    },
+    changePage(index) {
+      var _start = (index - 1) * this.pageSize;
+      var _end = index * this.pageSize;
+      this.showList = this.totalList.slice(_start, _end);
+    },
+  },
 };
 </script>
 <style scoped>

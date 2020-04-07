@@ -4,7 +4,7 @@
       <Input
         v-model="value4"
         placeholder="请输入产品标准号"
-        style="width: 200px"
+        style="width: 200px;"
       />
       <Button>搜索</Button>
     </div>
@@ -12,7 +12,7 @@
       border
       ref="selection"
       :columns="columns4"
-      :data="data1"
+      :data="showList"
       @on-row-click="detailOnClick"
     >
     </Table>
@@ -21,15 +21,24 @@
       <Button @click="handleSelectAll(true)">全选</Button>
       <Button @click="handleSelectAll(false)">取消选择</Button>
     </div>
+    <Page
+      :total="dataCount"
+      :page-size="pageSize"
+      show-total
+      @on-change="changePage"
+      show-elevator
+      class="page"
+    ></Page>
   </div>
 </template>
 <script>
-import { Table, Button, Input } from "view-design";
+import { Table, Button, Input, Page } from "view-design";
 export default {
   components: {
     Table,
     Button,
-    Input
+    Input,
+    Page,
   },
   data() {
     return {
@@ -38,52 +47,33 @@ export default {
         {
           type: "selection",
           width: 60,
-          align: "center"
+          align: "center",
         },
         {
           title: "缩略图",
-          key: "img"
+          key: "seq",
         },
         {
           title: "名称",
-          key: "name"
+          key: "tid",
         },
         {
           title: "标准号",
-          key: "standardNum"
+          key: "tname",
         },
         {
           title: "添加时间",
-          key: "date"
-        }
+          key: "pid",
+        },
       ],
-      data1: [
-        {
-          img: "John Brown",
-          name: "test1",
-          standardNum: "1",
-          date: "2016-10-03"
-        },
-        {
-          img: "John Brown",
-          name: "test2",
-          standardNum: "2",
-          date: "2016-10-03"
-        },
-        {
-          img: "John Brown",
-          name: "test3",
-          standardNum: "3",
-          date: "2016-10-03"
-        },
-        {
-          img: "John Brown",
-          name: "test4",
-          standardNum: "4",
-          date: "2016-10-03"
-        }
-      ]
+      showList: [],
+      totalList: [],
+      pageSize: 10, //每页显示多少条
+      dataCount: 0, //所有数据的长度
     };
+  },
+  mounted() {
+    this.proListAjax();
   },
   methods: {
     handleSelectAll(status) {
@@ -91,8 +81,28 @@ export default {
     },
     detailOnClick(data) {
       this.$router.push({ name: "detail", params: data.standardNum });
-    }
-  }
+    },
+    proListAjax() {
+      let that = this;
+      //假数据-------要改接口！！！！！！！！
+      this.$http.get("apis/web/getAllType", {}).then((res) => {
+        console.log(res);
+        that.totalList = res.data.data;
+        that.dataCount = that.totalList.length;
+        if (that.dataCount < this.pageSize) {
+          that.showList = that.totalList;
+        } else {
+          that.showList = that.totalList.slice(0, this.pageSize);
+        }
+        console.log(res.data.data);
+      });
+    },
+    changePage(index) {
+      var _start = (index - 1) * this.pageSize;
+      var _end = index * this.pageSize;
+      this.showList = this.totalList.slice(_start, _end);
+    },
+  },
 };
 </script>
 <style scoped>
@@ -101,5 +111,8 @@ export default {
 }
 .button {
   margin-top: 10px;
+}
+.page {
+  margin-top: 20px;
 }
 </style>
