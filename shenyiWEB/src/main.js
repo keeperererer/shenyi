@@ -3,11 +3,12 @@
 import Vue from "vue";
 import App from "./App";
 import router from "./router";
-// import ViewUI from 'view-design';
+import ViewUI from "view-design";
 import "view-design/dist/styles/iview.css";
 import requstPlugin from "./request/http.js";
-// import Storage from "./tool/storage.js";
-// Vue.use(ViewUI);
+// import { Message } from "view-design";
+// Vue.prototype.$Message = Message;
+Vue.use(ViewUI);
 Vue.config.productionTip = false;
 Vue.use(requstPlugin);
 // Vue.use(Storage);
