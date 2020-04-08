@@ -5,8 +5,15 @@
 </template>
 
 <script>
+import Storage from "@/tool/storage";
 export default {
   name: "App",
+  mounted() {
+    let value = Storage.getItem("token");
+    if (!value) {
+      this.$router.push({ path: "/login" });
+    }
+  },
 };
 </script>
 

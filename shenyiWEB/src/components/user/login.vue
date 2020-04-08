@@ -19,6 +19,7 @@
 </template>
 <script>
 import { Form, FormItem, Input, Icon, Button } from "view-design";
+import Storage from "@/tool/storage";
 export default {
   name: "Login",
   components: { Form, FormItem, Input, Icon, Button },
@@ -28,24 +29,13 @@ export default {
         name: "",
         password: "",
       },
-      // ruleInline: {
-      //   user: [
-      //     {
-      //       required: true,
-      //       type: "string",
-      //       message: "Please fill in the user name",
-      //       trigger: "blur",
-      //     },
-      //   ],
-      //   password: [
-      //     {
-      //       required: true,
-      //       message: "Please fill in the password.",
-      //       trigger: "blur",
-      //     },
-      //   ],
-      // },
     };
+  },
+  created() {},
+  mounted() {
+    // console.log(Storage.getItem("token"));
+    // let storage = new Storage();
+    // console.log(Storage);
   },
   methods: {
     handleSubmit(name) {
@@ -63,12 +53,28 @@ export default {
         name: this.users.name.trim(),
         pwd: this.users.password.trim(),
       };
+      // this.$http.post("/apis/web/login", params).then((res) => {
+      //   let obj = res.data.data;
+      //   // let setTime = 30*24*60*60*1000//过期时间30天
+      //   localStorage.setItem("token", obj);
+      //   // localStorage.setItem("tokenTime", +new Date());
+      //   if (res.status == 200) {
+      //     this.$router.push({ path: "/" });
+      //   }
+      // });
       this.$http.post("/apis/web/login", params).then((res) => {
         let obj = res.data.data;
-        localStorage.setItem("token", obj);
+        let setTime = 30 * 24 * 60 * 60 * 1000;
+        Storage.setItem({
+          name: "token",
+          value: obj,
+          expires: setTime,
+        });
         if (res.status == 200) {
           this.$router.push({ path: "/" });
         }
+        // let value = Storage.getItem("token");
+        // console.log(value);
       });
     },
   },

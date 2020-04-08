@@ -1,70 +1,26 @@
-<template>
-  <Form ref="formInline" :model="formInline" :rules="ruleInline" class="login">
-    <FormItem prop="user">
-      <Input type="text" v-model="formInline.user" placeholder="Username">
-        <Icon type="ios-person-outline" slot="prepend"></Icon>
-      </Input>
-    </FormItem>
-    <FormItem prop="password">
-      <Input
-        type="password"
-        v-model="formInline.password"
-        placeholder="Password"
-      >
-        <Icon type="ios-lock-outline" slot="prepend"></Icon>
-      </Input>
-    </FormItem>
-    <FormItem>
-      <Button type="primary" @click="handleSubmit('formInline')">Signin</Button>
-    </FormItem>
-  </Form>
-</template>
+<template> </template>
 <script>
-import { Form, FormItem, Input, Icon, Button } from "view-design";
+// import { Form, FormItem, Input, Icon, Button } from "view-design";
+// import Storage from "@/tool/storage";
 
 export default {
-  components: { Form, FormItem, Input, Icon, Button },
+  // components: { Form, FormItem, Input, Icon, Button },
   data() {
     return {
-      formInline: {
-        user: "",
-        password: "",
-      },
-      ruleInline: {
-        user: [
-          {
-            required: true,
-            message: "Please fill in the user name",
-            trigger: "blur",
-          },
-        ],
-        password: [
-          {
-            required: true,
-            message: "Please fill in the password.",
-            trigger: "blur",
-          },
-          {
-            type: "string",
-            min: 6,
-            message: "The password length cannot be less than 6 bits",
-            trigger: "blur",
-          },
-        ],
-      },
+      // storage: new Storage(),
     };
   },
-  methods: {
-    handleSubmit(name) {
-      this.$refs[name].validate((valid) => {
-        if (valid) {
-          this.$Message.success("Success!");
-        } else {
-          this.$Message.error("Fail!");
-        }
-      });
-    },
+  created() {
+    // console.log(this.storage);
+    // let storage = new Storage();
+    // Storage.setItem({
+    //   name: "token",
+    //   value: "lallalalalall",
+    // });
+    // let value = Storage.getItem("token");
+    // console.log(value);
   },
+  mounted() {},
 };
 </script>
 <style scoped>

@@ -6,10 +6,11 @@ import router from "./router";
 // import ViewUI from 'view-design';
 import "view-design/dist/styles/iview.css";
 import requstPlugin from "./request/http.js";
-
+// import Storage from "./tool/storage.js";
 // Vue.use(ViewUI);
 Vue.config.productionTip = false;
 Vue.use(requstPlugin);
+// Vue.use(Storage);
 // Vue.prototype.$http = requstPlugin;
 
 /* eslint-disable no-new */

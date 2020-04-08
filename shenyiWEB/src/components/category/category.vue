@@ -184,6 +184,6 @@ export default {
 </script>
 <style scoped>
 /* .demo-tree-render .ivu-tree-title {
-  width: 100% ;
+  width: 100%;
 } */
 </style>

@@ -1,15 +1,16 @@
 import axios from "axios";
 import { stringify } from "qs";
+import Storage from "@/tool/storage";
 axios.defaults.timeout = 10000; //请求超时设置
 axios.defaults.withCredentials = false;
 
 axios.interceptors.request.use(
   (config) => {
     config.headers["Content-Type"] = "application/x-www-form-urlencoded";
-    if (localStorage.getItem("token")) {
-      config.headers["authorization"] =
-        "Bearer" + localStorage.getItem("token");
+    if (Storage.getItem("token")) {
+      config.headers["authorization"] = "Bearer" + Storage.getItem("token");
     }
+    console.log(Storage.getItem("token"));
     return config;
   },
   (error) => {
