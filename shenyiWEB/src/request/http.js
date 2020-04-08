@@ -10,7 +10,7 @@ axios.interceptors.request.use(
     if (Storage.getItem("token")) {
       config.headers["authorization"] = "Bearer" + Storage.getItem("token");
     }
-    console.log(Storage.getItem("token"));
+    // console.log(Storage.getItem("token"));
     return config;
   },
   (error) => {
@@ -18,18 +18,6 @@ axios.interceptors.request.use(
     return Promise.error(error);
   }
 );
-// http.interceptors.request.use(
-//   (config) => {
-//     if (localStorage.getItem("token")) {
-//       config.headers["authorization"] =
-//         "Bearer" + localStorage.getItem("token");
-//     }
-//     return config;
-//   },
-//   (error) => {
-//     Promise.reject(error);
-//   }
-// );
 axios.interceptors.response.use(
   function (response) {
     return response;

@@ -152,11 +152,12 @@ export default {
               }),
               h(Button, {
                 props: Object.assign({}, this.buttonProps, {
-                  icon: "ios-remove",
+                  icon: "ios-color-wand",
                 }),
                 on: {
                   click: () => {
-                    this.remove(root, node, data);
+                    // this.remove(root, node, data);
+                    console.log("修改");
                   },
                 },
               }),
@@ -182,8 +183,4 @@ export default {
   },
 };
 </script>
-<style scoped>
-/* .demo-tree-render .ivu-tree-title {
-  width: 100%;
-} */
-</style>
+<style scoped></style>

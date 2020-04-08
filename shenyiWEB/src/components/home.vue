@@ -1,34 +1,148 @@
-<template> </template>
+<template>
+  <div class="category">
+    <Tree
+      :data="treeData"
+      :render="renderContent"
+      class="demo-tree-render"
+    ></Tree>
+  </div>
+</template>
 <script>
-// import { Form, FormItem, Input, Icon, Button } from "view-design";
-// import Storage from "@/tool/storage";
-
+import { Tree, Button, Icon } from "view-design";
 export default {
-  // components: { Form, FormItem, Input, Icon, Button },
+  components: {
+    Tree,
+    Button,
+    Icon,
+  },
   data() {
     return {
-      // storage: new Storage(),
+      deleteBoxShow: false,
+      createNodeShow: false,
+      nodeId: "",
+      nodeName: "",
+      nodeData: {},
+      nodeRoot: [],
+      nodeDetail: {},
+      treeNode: [],
+      pidWrap: [],
+      pid: "",
+      removeId: "",
+      treeData: null,
     };
   },
-  created() {
-    // console.log(this.storage);
-    // let storage = new Storage();
-    // Storage.setItem({
-    //   name: "token",
-    //   value: "lallalalalall",
-    // });
-    // let value = Storage.getItem("token");
-    // console.log(value);
+  computed: {},
+  mounted() {
+    this.treeDataAjax();
   },
-  mounted() {},
+  methods: {
+    treeDataAjax() {
+      let that = this;
+      this.$http.get("apis/web/types", {}).then((res) => {
+        this.renderTree(res.data.data);
+      });
+    },
+    renderTree(data) {
+      console.log(JSON.stringify(data))
+      let obj = {
+        title: "parent 1",
+        expand: true,
+        isParent: true,
+        children: data,
+      };
+      this.treeData = [obj];
+    },
+    renderContent(h, { root, node, data }) {
+      if (data.isParent) {
+        return h(
+          "span",
+          {
+            style: {
+              display: "inline-block",
+              width: "100%",
+            },
+          },
+          [
+            h("span", [h("span", data.title)]),
+            h(
+              "span",
+              {
+                style: {
+                  display: "inline-block",
+                  float: "right",
+                  marginRight: "32px",
+                },
+              },
+              [
+                h(Button, {
+                  props: Object.assign({}, this.buttonProps, {
+                    icon: "ios-add",
+                    type: "primary",
+                  }),
+                  style: {
+                    marginRight: "8px",
+                  },
+                  on: {
+                    click: () => {
+                      this.append(data);
+                    },
+                  },
+                }),
+              ]
+            ),
+          ]
+        );
+      } else if (!Object.keys(data).includes("isParent")) {
+        return h(
+          "span",
+          {
+            style: {
+              display: "inline-block",
+              width: "100%",
+            },
+          },
+          [
+            h("span", [h("span", data.title)]),
+            h(
+              "span",
+              {
+                style: {
+                  display: "inline-block",
+                  float: "right",
+                  marginRight: "32px",
+                },
+              },
+              [
+                h(Button, {
+                  props: Object.assign({}, this.buttonProps, {
+                    icon: "ios-add",
+                  }),
+                  style: {
+                    marginRight: "8px",
+                  },
+                  on: {
+                    click: () => {
+                      this.append(data);
+                    },
+                  },
+                }),
+                h(Button, {
+                  props: Object.assign({}, this.buttonProps, {
+                    icon: "ios-remove",
+                  }),
+                  on: {
+                    click: () => {
+                      this.remove(root, node, data);
+                    },
+                  },
+                }),
+              ]
+            ),
+          ]
+        );
+      }
+    },
+  },
 };
 </script>
-<style scoped>
-.login {
-  /* position: relative; */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-</style>
+<style scoped></style>
