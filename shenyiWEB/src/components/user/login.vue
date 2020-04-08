@@ -41,9 +41,9 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          this.$Message.success("Success!");
+          // this.$Message.success("Success!");
         } else {
-          this.$Message.error("Fail!");
+          // this.$Message.error("Fail!");
         }
       });
       this.loginAjax();
@@ -64,17 +64,16 @@ export default {
       // });
       this.$http.post("/apis/web/login", params).then((res) => {
         let obj = res.data.data;
+        // console.log(res.data);
         let setTime = 30 * 24 * 60 * 60 * 1000;
         Storage.setItem({
           name: "token",
           value: obj,
           expires: setTime,
         });
-        if (res.status == 200) {
+        if (res.data.msg == "获取成功") {
           this.$router.push({ path: "/" });
         }
-        // let value = Storage.getItem("token");
-        // console.log(value);
       });
     },
   },
