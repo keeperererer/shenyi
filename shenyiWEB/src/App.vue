@@ -25,4 +25,7 @@ export default {
 .ivu-tree-title {
   width: 100%;
 }
+.ivu-table-cell{
+  text-overflow: initial;
+}
 </style>

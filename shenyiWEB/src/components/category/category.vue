@@ -13,20 +13,21 @@ export default {
   components: {
     Tree,
     Button,
-    Icon,
+    Icon
   },
   data() {
     return {
       treeData: [],
-      editState: false,
+      // editState: false,
+      addState: false,
       buttonProps: {
         type: "default",
-        size: "small",
+        size: "small"
       },
       //输入框要修改的内容
       inputContent: "",
       //修改前的TreeNode名称
-      oldName: "",
+      oldName: ""
     };
   },
   created() {
@@ -35,7 +36,7 @@ export default {
   methods: {
     treeDataAjax() {
       let that = this;
-      this.$http.get("apis/web/types", {}).then((res) => {
+      this.$http.get("apis/web/types", {}).then(res => {
         this.renderTree(res.data.data);
       });
     },
@@ -44,7 +45,7 @@ export default {
         title: "分类",
         expand: true,
         isParent: true,
-        children: data,
+        children: data
       };
       this.treeData = [obj];
     },
@@ -55,8 +56,8 @@ export default {
           {
             style: {
               display: "inline-block",
-              width: "100%",
-            },
+              width: "100%"
+            }
           },
           [
             h("span", [h("span", data.title)]),
@@ -66,26 +67,26 @@ export default {
                 style: {
                   display: "inline-block",
                   float: "right",
-                  marginRight: "32px",
-                },
+                  marginRight: "32px"
+                }
               },
               [
                 h(Button, {
                   props: Object.assign({}, this.buttonProps, {
                     icon: "ios-add",
-                    type: "primary",
+                    type: "primary"
                   }),
                   style: {
-                    width: "64px",
+                    width: "64px"
                   },
                   on: {
                     click: () => {
                       this.append(data);
-                    },
-                  },
-                }),
+                    }
+                  }
+                })
               ]
-            ),
+            )
           ]
         );
       } else if (!Object.keys(data).includes("isParent")) {
@@ -94,8 +95,8 @@ export default {
           {
             style: {
               display: "inline-block",
-              width: "100%",
-            },
+              width: "100%"
+            }
           },
           [
             h("span", [h("span", data.title)]),
@@ -105,35 +106,123 @@ export default {
                 style: {
                   display: "inline-block",
                   float: "right",
-                  marginRight: "32px",
-                },
+                  marginRight: "32px"
+                }
               },
               [
                 h(Button, {
                   props: Object.assign({}, this.buttonProps, {
-                    icon: "ios-add",
+                    icon: "ios-add"
                   }),
                   style: {
-                    marginRight: "8px",
+                    marginRight: "8px"
                   },
                   on: {
                     click: () => {
                       this.append(data);
-                    },
-                  },
+                    }
+                  }
                 }),
                 h(Button, {
                   props: Object.assign({}, this.buttonProps, {
-                    icon: "ios-color-wand",
+                    icon: "ios-color-wand"
                   }),
                   on: {
                     click: () => {
                       this.edit(data);
-                    },
-                  },
-                }),
+                    }
+                  }
+                })
               ]
             ),
+            //添加框
+            // h(
+            //   "span",
+            //   {
+            //     class: "hhhaha",
+            //     style: {
+            //       display: "inline-block",
+            //       lineHeight: "1.6rem",
+            //       width: "100%",
+            //       cursor: "pointer",
+            //       position: "absolute",
+            //       left: "280px",
+            //     },
+            //   },
+            //   [
+            //     h("span", [
+            //       h(`${data.addState ? "input" : ""}`, {
+            //         attrs: {
+            //           value: `${data.addState ? data.title : ""}`,
+            //           autofocus: "true",
+            //         },
+            //         style: {
+            //           width: "12rem",
+            //           cursor: "auto",
+            //           borderRadius: "5px",
+            //           outline: "none",
+            //           border: "1px #ccc solid",
+            //         },
+            //         on: {
+            //           change: (event) => {
+            //             this.inputContent = event.target.value;
+            //           },
+            //         },
+            //       }),
+            //     ]),
+            //     h(
+            //       `${data.addState ? "span" : ""}`,
+            //       {
+            //         style: {
+            //           marginLeft: ".5rem",
+            //           height: "27px",
+            //           display: "inline-block",
+            //         },
+            //       },
+            //       [
+            //         // 确认按钮
+            //         h(Button, {
+            //           props: Object.assign({}, this.buttonProps, {
+            //             icon: "md-checkmark",
+            //           }),
+            //           style: {
+            //             border: 0,
+            //             background: "rgba(0,0,0,0)",
+            //             fontSize: "1.3rem",
+            //             outline: "none",
+            //             height: "27px",
+            //             lineHeight: "27px",
+            //           },
+            //           on: {
+            //             click: (event) => {
+            //               // this.confirmTheChange(data);
+            //             },
+            //           },
+            //         }),
+            //         // 取消按钮
+            //         h(Button, {
+            //           props: Object.assign({}, this.buttonProps, {
+            //             icon: "md-close",
+            //           }),
+            //           style: {
+            //             border: "0",
+            //             background: "rgba(0,0,0,0)",
+            //             fontSize: "1.3rem",
+            //             outline: "none",
+            //             height: "27px",
+            //             lineHeight: "27px",
+            //           },
+            //           on: {
+            //             click: () => {
+            //               this.CancelChange(data);
+            //             },
+            //           },
+            //         }),
+            //       ]
+            //     ),
+            //   ]
+            // ),
+            //修改框
             h(
               "span",
               {
@@ -143,120 +232,45 @@ export default {
                   lineHeight: "1.6rem",
                   width: "100%",
                   cursor: "pointer",
-                },
+                  position: "absolute",
+                  left: "280px"
+                }
               },
               [
                 h("span", [
-                  // h(Icon, {
-                  //   props: {
-                  //     type: `${
-                  //       data.children == undefined || data.children.length == 0
-                  //         ? "md-document"
-                  //         : "ios-folder"
-                  //     }`,
-                  //   },
-                  //   style: {
-                  //     marginRight: "8px",
-                  //   },
-                  // }),
-                  // h(`${data.editState ? "" : "span"}`, data.title),
                   h(`${data.editState ? "input" : ""}`, {
                     attrs: {
                       value: `${data.editState ? data.title : ""}`,
-                      autofocus: "true",
+                      autofocus: "true"
                     },
                     style: {
                       width: "12rem",
                       cursor: "auto",
+                      borderRadius: "5px",
+                      outline: "none",
+                      border: "1px #ccc solid"
                     },
                     on: {
-                      change: (event) => {
+                      change: event => {
                         this.inputContent = event.target.value;
-                      },
-                    },
-                  }),
+                      }
+                    }
+                  })
                 ]),
-                // 增删改按钮部分
-                // h(
-                //   `${data.editState ? "" : "span"}`,
-                //   {
-                //     class: "btnNone",
-                //     style: { marginLeft: "1rem" },
-                //   },
-                //   [
-                //     //操作按钮部分
-                //     // 编辑按钮
-                //     h(Button, {
-                //       props: Object.assign({}, this.buttonProps, {
-                //         icon: "ios-brush-outline",
-                //       }),
-                //       style: {
-                //         marginRight: "8px",
-                //         borderRadius: "50%",
-                //         width: "1.5rem",
-                //         lineHeight: "0",
-                //         padding: "0",
-                //         height: "1.4rem",
-                //       },
-                //       on: {
-                //         click: () => {
-                //           this.editTree(data);
-                //         },
-                //       },
-                //     }),
-                //     // 添加按钮
-                //     h(Button, {
-                //       props: Object.assign({}, this.buttonProps, {
-                //         icon: "ios-add",
-                //       }),
-                //       style: {
-                //         marginRight: "8px",
-                //         borderRadius: "50%",
-                //         width: "1.5rem",
-                //         lineHeight: "0",
-                //         padding: "0",
-                //         height: "1.4rem",
-                //       },
-                //       on: {
-                //         click: () => {
-                //           this.append(data);
-                //         },
-                //       },
-                //     }),
-                //     // 删除按钮
-                //     h(Button, {
-                //       props: Object.assign({}, this.buttonProps, {
-                //         icon: "ios-remove",
-                //       }),
-                //       style: {
-                //         marginRight: "8px",
-                //         borderRadius: "50%",
-                //         width: "1.5rem",
-                //         padding: "0",
-                //         lineHeight: "0",
-                //         height: "1.4rem",
-                //       },
-                //       on: {
-                //         click: () => {
-                //           this.remove(root, node, data);
-                //         },
-                //       },
-                //     }),
-                //   ]
-                // ),
-                // 确认/取消修改部分
                 h(
                   `${data.editState ? "span" : ""}`,
                   {
                     style: {
                       marginLeft: ".5rem",
-                    },
+                      height: "27px",
+                      display: "inline-block"
+                    }
                   },
                   [
                     // 确认按钮
                     h(Button, {
                       props: Object.assign({}, this.buttonProps, {
-                        icon: "md-checkmark",
+                        icon: "md-checkmark"
                       }),
                       style: {
                         // marginRight: '8px',
@@ -264,100 +278,70 @@ export default {
                         background: "rgba(0,0,0,0)",
                         fontSize: "1.3rem",
                         outline: "none",
+                        height: "27px",
+                        lineHeight: "27px"
                       },
                       on: {
-                        click: (event) => {
+                        click: event => {
                           this.confirmTheChange(data);
-                        },
-                      },
+                        }
+                      }
                     }),
                     // 取消按钮
                     h(Button, {
                       props: Object.assign({}, this.buttonProps, {
-                        icon: "md-close",
+                        icon: "md-close"
                       }),
                       style: {
                         border: "0",
                         background: "rgba(0,0,0,0)",
                         fontSize: "1.3rem",
                         outline: "none",
+                        height: "27px",
+                        lineHeight: "27px"
                       },
                       on: {
                         click: () => {
                           this.CancelChange(data);
-                        },
-                      },
-                    }),
+                        }
+                      }
+                    })
                   ]
-                ),
+                )
               ]
-            ),
-            //确认/取消修改部分
-            // h(
-            //   `${data.editState ? "span" : ""}`,
-            //   {
-            //     style: {
-            //       marginLeft: ".5rem",
-            //     },
-            //   },
-            //   [
-            //     //确认按钮
-            //     h(Button, {
-            //       props: Object.assign({}, this.buttonProps, {
-            //         icon: "md-checkmark",
-            //       }),
-            //       style: {
-            //         border: 0,
-            //         // background: "rgba(0,0,0,0)",
-            //         fontSize: "1.3rem",
-            //         outline: "none",
-            //       },
-            //       on: {
-            //         click: (event) => {
-            //           this.confirmTheChange(data);
-            //         },
-            //       },
-            //     }),
-            //     //取消按钮
-            //     h(Button, {
-            //       props: Object.assign({}, this.buttonProps, {
-            //         icon: "md-close",
-            //       }),
-            //       style: {
-            //         border: "0",
-            //         // background: "rgba(0,0,0,0)",
-            //         fontSize: "1.3rem",
-            //         outline: "none",
-            //       },
-            //       on: {
-            //         click: () => {
-            //           this.CancelChange(data);
-            //         },
-            //       },
-            //     }),
-            //   ]
-            // ),
+            )
           ]
         );
       }
     },
     setStates(data) {
       var editState = data.editState;
+      // var addState = data.addState;
       if (editState) {
         this.$set(data, "editState", false);
       } else {
         this.$set(data, "editState", true);
       }
+      // if (addState) {
+      //   this.$set(data, "addState", false);
+      // } else {
+      //   this.$set(data, "addState", true);
+      // }
     },
     append(data) {
-      console.log("add");
       event.stopPropagation();
       const children = data.children || [];
       children.push({
         title: "新建节点",
-        expand: true,
+        expand: true
       });
+      // children.push({
+      //   title: data.title,
+      //   expand: true,
+      // });
       this.$set(data, "children", children);
+      // this.setStates(data);
+      this.appendAjax(data);
     },
     edit(data) {
       console.log("edit");
@@ -370,7 +354,7 @@ export default {
     confirmTheChange(data) {
       if (!this.inputContent) {
         this.$Notice.warning({
-          title: "当前输入有误",
+          title: "当前输入有误"
         });
       } else {
         if (this.oldName !== this.inputContent) {
@@ -380,12 +364,13 @@ export default {
             onOk: () => {
               data.title = this.inputContent;
               this.$Message.info("修改成功");
+              this.editAjax(data);
             },
             onCancel: () => {
               this.$Message.info("取消");
-            },
+            }
           });
-          this.setState(data);
+          this.setStates(data);
         } else {
           this.setStates(data);
         }
@@ -394,11 +379,34 @@ export default {
     //取消修改树节点
     CancelChange(data) {
       this.$Notice.info({
-        title: "取消修改",
+        title: "取消修改"
       });
       this.setStates(data);
     },
-  },
+    appendAjax(data) {
+      console.log("add---", data);
+      let params = {
+        pId: data.value,
+        tName: data.title
+      };
+      console.log(params);
+      // let that = this
+      this.$http.get("/apis/web/insertType", params).then(res => {
+        console.log(res);
+      });
+    },
+    editAjax(data) {
+      console.log("edit---", data);
+      let params = {
+        tId: data.value,
+        tName: data.title
+      };
+      console.log(params);
+      this.$http.get("/apis/web/updateType", params).then(res => {
+        console.log(res);
+      });
+    }
+  }
 };
 </script>
 <style>
