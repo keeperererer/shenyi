@@ -1,118 +1,120 @@
 <template>
-  <div>
-    <div class="search">
-      <Input
-        v-model="value4"
-        placeholder="请输入产品标准号"
-        style="width: 200px;"
-      />
-      <Button>搜索</Button>
-    </div>
-    <Table
-      border
-      ref="selection"
-      :columns="columns4"
-      :data="showList"
-      @on-row-click="detailOnClick"
-    >
-    </Table>
-    <div class="button">
-      <Button type="warning">删除</Button>
-      <Button @click="handleSelectAll(true)">全选</Button>
-      <Button @click="handleSelectAll(false)">取消选择</Button>
-    </div>
-    <Page
-      :total="dataCount"
-      :page-size="pageSize"
-      show-total
-      @on-change="changePage"
-      show-elevator
-      class="page"
-    ></Page>
-  </div>
+  <Table
+    border
+    :columns="columns7"
+    :data="data6"
+    @on-row-click="detailOnClick"
+  ></Table>
 </template>
 <script>
-import { Table, Button, Input, Page } from "view-design";
 export default {
-  components: {
-    Table,
-    Button,
-    Input,
-    Page,
-  },
   data() {
     return {
-      value4: "",
-      columns4: [
+      columns7: [
         {
-          type: "selection",
-          width: 60,
+          title: "Name",
+          key: "name",
+          render: (h, params) => {
+            return h("div", [
+              h("Icon", {
+                props: {
+                  type: "person"
+                }
+              }),
+              h("strong", params.row.name)
+            ]);
+          }
+        },
+        {
+          title: "Age",
+          key: "age"
+        },
+        {
+          title: "Address",
+          key: "address"
+        },
+        {
+          title: "Action",
+          key: "action",
+          width: 150,
           align: "center",
-        },
-        {
-          title: "缩略图",
-          key: "seq",
-        },
-        {
-          title: "名称",
-          key: "tid",
-        },
-        {
-          title: "标准号",
-          key: "tname",
-        },
-        {
-          title: "添加时间",
-          key: "pid",
-        },
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "5px"
+                  },
+                  on: {
+                    click: () => {
+                      this.show(params.index);
+                    }
+                  }
+                },
+                "View"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.remove(params.index);
+                    }
+                  }
+                },
+                "Delete"
+              )
+            ]);
+          }
+        }
       ],
-      showList: [],
-      totalList: [],
-      pageSize: 10, //每页显示多少条
-      dataCount: 0, //所有数据的长度
+      data6: [
+        {
+          name: "John Brown",
+          age: 18,
+          address: "New York No. 1 Lake Park"
+        },
+        {
+          name: "Jim Green",
+          age: 24,
+          address: "London No. 1 Lake Park"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park"
+        },
+        {
+          name: "Jon Snow",
+          age: 26,
+          address: "Ottawa No. 2 Lake Park"
+        }
+      ]
     };
   },
-  mounted() {
-    this.proListAjax();
-  },
   methods: {
-    handleSelectAll(status) {
-      this.$refs.selection.selectAll(status);
-    },
-    detailOnClick(data) {
-      this.$router.push({ name: "detail", params: data.standardNum });
-    },
-    proListAjax() {
-      let that = this;
-      //假数据-------要改接口！！！！！！！！
-      this.$http.get("apis/web/getAllType", {}).then((res) => {
-        console.log(res);
-        that.totalList = res.data.data;
-        that.dataCount = that.totalList.length;
-        if (that.dataCount < this.pageSize) {
-          that.showList = that.totalList;
-        } else {
-          that.showList = that.totalList.slice(0, this.pageSize);
-        }
-        console.log(res.data.data);
+    show(index) {
+      this.$Modal.info({
+        title: "User Info",
+        content: `Name：${this.data6[index].name}<br>Age：${this.data6[index].age}<br>Address：${this.data6[index].address}`
       });
     },
-    changePage(index) {
-      var _start = (index - 1) * this.pageSize;
-      var _end = index * this.pageSize;
-      this.showList = this.totalList.slice(_start, _end);
+    remove(index) {
+      this.data6.splice(index, 1);
     },
-  },
+    detailOnClick(data) {
+      //需要改点击范围
+      this.$router.push({ path: "/" });
+    }
+  }
 };
 </script>
-<style scoped>
-.search {
-  margin-bottom: 10px;
-}
-.button {
-  margin-top: 10px;
-}
-.page {
-  margin-top: 20px;
-}
-</style>

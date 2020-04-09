@@ -1,19 +1,21 @@
 <template>
   <div>
-    <!-- <div class="search">
+    <div class="search">
       <Input
         v-model="value4"
         placeholder="请输入产品标准号"
         style="width: 200px;"
       />
       <Button>搜索</Button>
-    </div> -->
+    </div>
     <Table
       border
       ref="selection"
       :columns="tabList"
       :data="showList"
       @on-row-click="detailOnClick"
+      @on-select="selectOneRow"
+      @on-select-all="selectAllRow"
     >
     </Table>
     <div class="button">
@@ -33,6 +35,7 @@
 </template>
 <script>
 import { Table, Button, Input, Page } from "view-design";
+import $ from "jquery";
 export default {
   components: {
     Table,
@@ -43,47 +46,31 @@ export default {
   data() {
     return {
       value4: "",
-      columns4: [
-        {
-          type: "selection",
-          width: 60,
-          align: "center"
-        },
-        {
-          title: "缩略图",
-          key: "seq"
-        },
-        {
-          title: "名称",
-          key: "tid"
-        },
-        {
-          title: "标准号",
-          key: "tname"
-        },
-        {
-          title: "添加时间",
-          key: "pid"
-        }
-      ],
       showList: [],
-      totalList: [],
+      totalList: [], //所有数据
       attributeAllList: [], //Attribute所有数据
       attributeList: [], //Attribute extra = 0的数据
       tabList: [],
-      allList: [], //all数据
       pageSize: 10, //每页显示多少条
       dataCount: 0 //所有数据的长度
     };
   },
   mounted() {
-    // this.proListAjax();
     this.attributeListAjax();
     this.allListAjax();
   },
   methods: {
     handleSelectAll(status) {
       this.$refs.selection.selectAll(status);
+      if (status) {
+        console.log(this.$refs.selection.objData);
+      }
+    },
+    selectOneRow(row) {
+      console.log(row);
+    },
+    selectAllRow() {
+      console.log(this.$refs.selection.objData);
     },
     detailOnClick(data) {
       this.$router.push({ name: "detail", params: data.standardNum });
@@ -97,7 +84,6 @@ export default {
             that.attributeList.push(item);
           }
         });
-        console.log(that.attributeList);
         that.attributeList.forEach(item => {
           that.tabList.push({
             title: item.sidName,
@@ -107,7 +93,18 @@ export default {
 
         that.tabList.unshift({
           title: "缩略图",
-          key: "picUrl"
+          key: "picUrl",
+          render: (h, params) => {
+            let url = `https://shenyi.looyeagee.cn/uploads/${params.row.pId}/${params.row.picUrl[0]}`;
+            return h("img", {
+              attrs: {
+                src: url
+              },
+              style: {
+                width: "100px"
+              }
+            });
+          }
         });
         that.tabList.unshift({
           type: "selection",
@@ -119,7 +116,27 @@ export default {
           title: "操作",
           key: "down",
           width: 70,
-          fixed: "right"
+          fixed: "right",
+          render: (h, params) => {
+            return h("div", [
+              h(
+                Button,
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      event.stopPropagation();
+                      this.downLoad(params);
+                    }
+                  }
+                },
+                "下载"
+              )
+            ]);
+          }
         });
       });
     },
@@ -133,28 +150,33 @@ export default {
         } else {
           that.showList = that.totalList.slice(0, this.pageSize);
         }
-        console.log(that.totalList);
       });
     },
-    // proListAjax() {
-    //   let that = this;
-    //   //假数据-------要改接口！！！！！！！！
-    //   this.$http.get("apis/web/getAllType", {}).then(res => {
-    //     console.log(res);
-    //     that.totalList = res.data.data;
-    //     that.dataCount = that.totalList.length;
-    //     if (that.dataCount < this.pageSize) {
-    //       that.showList = that.totalList;
-    //     } else {
-    //       that.showList = that.totalList.slice(0, this.pageSize);
-    //     }
-    //     console.log(res.data.data);
-    //   });
-    // },
     changePage(index) {
       var _start = (index - 1) * this.pageSize;
       var _end = index * this.pageSize;
       this.showList = this.totalList.slice(_start, _end);
+    },
+    downLoad(params) {
+      let down = params.row.attachUrl;
+      if (down) {
+        // let url = `https://codeload.github.com/douban/douban-client/legacy.zip/master`;
+        let url = `https://shenyi.looyeagee.cn/uploads/${params.row.pId}/${params.row.attachUrl}`;
+        var form = $("<form></form>")
+          .attr("action", url)
+          .attr("method", "get");
+        form.append(
+          $("<input></input>").attr("type", "hidden")
+          // .attr("name", "Authorization")
+          // .attr("value", sessionId)
+        );
+        form
+          .appendTo("body")
+          .submit()
+          .remove();
+      } else {
+        this.$Message.info("没有附件提供下载");
+      }
     }
   }
 };
