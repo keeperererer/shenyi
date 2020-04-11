@@ -123,7 +123,7 @@ export default {
       console.log("取消某一行后的pid", this.pid);
     },
     detailOnClick(data) {
-      this.$router.push({ name: "detail", params: data.standardNum });
+      this.$router.push({ name: "detail", params: data });
     },
     deletePro() {
       let params = {
