@@ -12,10 +12,10 @@
         <div class="addInput" v-show="show">
           <Select v-model="selectValue" style="width: 200px;" filterable>
             <Option
-              v-for="(item, index) in tabList"
+              v-for="(item, index) in selectList"
               :key="index"
-              :value="item.title"
-              >{{ item.title }}</Option
+              :value="item"
+              >{{ item }}</Option
             >
           </Select>
           <Input
@@ -27,11 +27,20 @@
         </div>
       </transition>
     </div>
+    <Modal v-model="modal1" title="修改名字" @on-ok="ok" @on-cancel="cancel">
+      <Input v-model="newName" placeholder="请输入..." style="width: 200px;" />
+    </Modal>
     <div class="mainList" v-for="(item, index) in tabList" :key="index">
-      <strong>{{ item.title }}</strong>
+      <strong>{{ item.title }} / {{ item.tableName }}</strong>
       <List border>
         <ListItem v-for="(k, index) in mianTable[index]" :key="index">
           {{ k.name }}
+          <Button
+            type="warning"
+            class="editButton"
+            @click="clickEdit(item.tableName, k.id)"
+            >修改</Button
+          >
         </ListItem>
       </List>
     </div>
@@ -41,6 +50,10 @@
 export default {
   data() {
     return {
+      tableName: null,
+      id: null,
+      modal1: false,
+      newName: "",
       selectValue: "",
       inputValue: "",
       show: false,
@@ -48,7 +61,8 @@ export default {
       attributeList: [], //符合条件的数据
       tabList: [],
       attTbName: [], //att中符合条件的tableName
-      mianTable: [] //根据tableName得到所有数据
+      mianTable: [], //根据tableName得到所有数据
+      selectList: []
     };
   },
   created() {
@@ -66,10 +80,12 @@ export default {
             that.attTbName.push(item.tableName);
           }
         });
+        that.selectList = that.attTbName.toString().split(",");
         that.attributeList.forEach(item => {
           that.tabList.push({
             title: item.sidName,
-            key: item.fieldName
+            key: item.fieldName,
+            tableName: item.tableName
           });
         });
         this.mainTableAjax();
@@ -91,27 +107,41 @@ export default {
       }
     },
     addName() {
-      console.log("添加");
-    },
-    addName() {
-      console.log("添加", this.selectValue + this.inputValue);
       let that = this;
       let params = {
         name: that.inputValue,
         tableName: that.selectValue
       };
-      console.log(params);
       this.$http.get("apis/web/insertMaintainableTables", params).then(res => {
-        console.log(res);
+        this.$router.go(0);
       });
+    },
+    clickEdit(tableName, id) {
+      this.modal1 = true;
+      this.tableName = tableName;
+      this.id = id;
+    },
+    ok() {
+      let that = this;
+      let params = {
+        tableName: that.tableName,
+        id: that.id,
+        name: that.newName
+      };
+      this.$http.get("apis/web/editaintainableTables", params).then(res => {
+        this.$router.go(0);
+      });
+      this.$Message.info("修改成功");
+    },
+    cancel() {
+      this.$Message.info("取消修改");
     }
   }
 };
 </script>
 <style scoped>
 .maintain {
-  /* width: 50%; */
-  /* margin: 0 auto; */
+  width: 60%;
   position: relative;
 }
 strong {
@@ -119,10 +149,7 @@ strong {
   display: inline-block;
 }
 .mainList {
-  width: 40%;
   margin-bottom: 30px;
-  margin-right: 10px;
-  display: inline-block;
 }
 .addButton {
   margin-bottom: 10px;
@@ -142,5 +169,9 @@ strong {
 .slide-fade-leave-to {
   transform: translateX(10px);
   opacity: 0;
+}
+.editButton {
+  position: absolute;
+  right: 15px;
 }
 </style>

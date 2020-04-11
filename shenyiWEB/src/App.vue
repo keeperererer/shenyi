@@ -13,7 +13,7 @@ export default {
     if (!value) {
       this.$router.push({ path: "/login" });
     }
-  },
+  }
 };
 </script>
 
@@ -25,7 +25,11 @@ export default {
 .ivu-tree-title {
   width: 100%;
 }
-.ivu-table-cell{
+.ivu-table-cell {
   text-overflow: initial;
+}
+.ivu-modal-content {
+  border: 1px solid #ccc;
+  box-shadow: none;
 }
 </style>
