@@ -12,19 +12,22 @@
           >
             <!-- <MenuItem name="1-0" to="/">管理平台</MenuItem> -->
             <MenuItem name="1-1" to="/category"
-              ><Icon type="ios-bookmark" />分类</MenuItem
+              ><Icon type="ios-bookmark" />分类管理</MenuItem
             >
             <!-- <MenuItem name="1-2" to="/Production">产品管理</MenuItem> -->
             <Submenu name="2">
               <template slot="title">
                 <Icon type="ios-navigate"></Icon>
-                产品
+                产品管理
               </template>
               <MenuItem name="2-1" to="/addProduction">添加产品</MenuItem>
-              <MenuItem name="2-2" to="/production">产品管理</MenuItem>
+              <MenuItem name="2-2" to="/production">查看产品</MenuItem>
             </Submenu>
-            <MenuItem name="3-1" to="/extra"
-              ><Icon type="ios-clipboard" />附加字段</MenuItem
+            <MenuItem name="3-1" to="/maintain"
+              ><Icon type="ios-clipboard" />维护字段管理</MenuItem
+            >
+            <MenuItem name="3-2" to="/extra"
+              ><Icon type="ios-clipboard" />附加字段管理</MenuItem
             >
           </Menu>
         </Sider>
@@ -50,12 +53,12 @@ export default {
     Menu,
     MenuItem,
     Submenu,
-    Icon,
+    Icon
   },
   data() {
     return {
       openNames: [],
-      activeName: "",
+      activeName: ""
     };
   },
   created() {
@@ -64,7 +67,7 @@ export default {
       this.openNames.push(this.$route.meta.order.split("-")[0]);
     }
   },
-  mounted() {},
+  mounted() {}
 };
 </script>
 <style scoped>

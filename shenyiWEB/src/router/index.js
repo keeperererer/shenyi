@@ -7,6 +7,7 @@ import Production from "@/components/production/production";
 import addProduction from "@/components/production/addProduction";
 import detail from "@/components/production/productionDetail";
 import Extra from "@/components/extra/extra";
+import Maintain from "@/components/maintain/maintain";
 import Home from "@/components/home";
 import error from "@/components/error";
 
@@ -21,55 +22,63 @@ export default new Router({
         {
           path: "",
           name: "Home",
-          component: Home,
+          component: Home
         },
         {
           path: "category",
           name: "Category",
           component: Category,
           meta: {
-            order: "1-1",
-          },
+            order: "1-1"
+          }
         },
         {
           path: "extra",
           name: "Extra",
           component: Extra,
           meta: {
-            order: "3-1",
-          },
+            order: "3-2"
+          }
+        },
+        {
+          path: "maintain",
+          name: "Maintain",
+          component: Maintain,
+          meta: {
+            order: "3-1"
+          }
         },
         {
           path: "production",
           name: "Production",
           component: Production,
           meta: {
-            order: "2-2",
-          },
+            order: "2-2"
+          }
         },
         {
           path: "addProduction",
           name: "addProduction",
           component: addProduction,
           meta: {
-            order: "2-1",
-          },
+            order: "2-1"
+          }
         },
         {
           path: "production/detail",
           name: "detail",
-          component: detail,
-        },
-      ],
+          component: detail
+        }
+      ]
     },
     {
       path: "/login",
       name: "Login",
-      component: Login,
+      component: Login
     },
     {
       path: "*",
-      component: error,
-    },
-  ],
+      component: error
+    }
+  ]
 });
