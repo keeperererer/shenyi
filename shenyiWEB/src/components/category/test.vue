@@ -1,171 +1,418 @@
 <template>
-  <div class="cate">
-    <Button
-      size="large"
-      icon="ios-add"
-      shape="circle"
-      class="addButton"
-      @click="show = !show"
-    ></Button>
-    <transition name="slide-fade">
-      <div class="addInput" v-show="show">
-        <Select v-model="model7" style="width: 200px;" filterable>
-          <Option :value="topCate">{{ topCate }}</Option>
-          <OptionGroup label="为以下分类添加下级">
-            <Option
-              v-for="(item, index) in downList"
-              :value="item.value"
-              :key="index"
-              >{{ item.label }}</Option
-            >
-          </OptionGroup>
-        </Select>
-        <Input
-          v-model="value4"
-          placeholder="请输入分类名..."
-          style="width: 200px;"
-        />
-        <Button>添加</Button>
-      </div>
-    </transition>
-    <Table border :columns="columns5" :data="showList"></Table>
-    <Page
-      :total="dataCount"
-      :page-size="pageSize"
-      show-total
-      @on-change="changePage"
-      show-elevator
-    ></Page>
+  <div class="category">
+    <Tree
+      :data="treeData"
+      :render="renderContent"
+      class="demo-tree-render"
+    ></Tree>
   </div>
 </template>
 <script>
-import {
-  Button,
-  Table,
-  Icon,
-  Input,
-  Select,
-  OptionGroup,
-  Option,
-  Page,
-} from "view-design";
-
+import { Tree, Button, Icon } from "view-design";
 export default {
   components: {
+    Tree,
     Button,
-    Table,
-    Icon,
-    Input,
-    Select,
-    OptionGroup,
-    Option,
-    Page,
+    Icon
   },
   data() {
     return {
-      show: false,
-      totalList: [],
-      dataCount: 0, //所有数据的长度
-      pageSize: 10, //每页显示多少条
-      downList: [],
-      model7: "",
-      value4: "",
-      topCate: "顶级分类",
-      columns5: [
-        {
-          title: "分类id",
-          key: "seq",
-          sortable: true,
-        },
-        {
-          title: "上级分类名称",
-          key: "tid",
-        },
-        {
-          title: "分类名称",
-          key: "tname",
-        },
-        {
-          title: "创建时间",
-          key: "pid",
-          sortable: true,
-        },
-        {
-          title: "操作",
-          key: "action",
-          align: "center",
-          render: (h, params) => {
-            return h("div", [
-              h(
-                Button,
-                {
-                  props: {
-                    type: "primary",
+      treeData: [],
+      // editState: false,
+      addState: false,
+      buttonProps: {
+        type: "default",
+        size: "small"
+      },
+      //输入框要修改的内容
+      inputContent: "",
+      //修改前的TreeNode名称
+      oldName: ""
+    };
+  },
+  created() {
+    this.treeDataAjax();
+  },
+  methods: {
+    treeDataAjax() {
+      let that = this;
+      this.$http.get("apis/web/types", {}).then(res => {
+        this.renderTree(res.data.data);
+      });
+    },
+    renderTree(data) {
+      let obj = {
+        title: "分类",
+        expand: true,
+        isParent: true,
+        children: data
+      };
+      this.treeData = [obj];
+    },
+    renderContent(h, { root, node, data }) {
+      if (data.isParent) {
+        return h(
+          "span",
+          {
+            style: {
+              display: "inline-block",
+              width: "100%"
+            }
+          },
+          [
+            h("span", [h("span", data.title)]),
+            h(
+              "span",
+              {
+                style: {
+                  display: "inline-block",
+                  float: "right",
+                  marginRight: "32px"
+                }
+              },
+              [
+                h(Button, {
+                  props: Object.assign({}, this.buttonProps, {
+                    icon: "ios-add",
+                    type: "primary"
+                  }),
+                  style: {
+                    width: "64px"
                   },
                   on: {
                     click: () => {
-                      console.log("修改");
-                    },
-                  },
-                },
-                "修改"
-              ),
-            ]);
+                      this.append(data);
+                    }
+                  }
+                })
+              ]
+            )
+          ]
+        );
+      } else if (!Object.keys(data).includes("isParent")) {
+        return h(
+          "span",
+          {
+            style: {
+              display: "inline-block",
+              width: "100%"
+            }
           },
-        },
-      ],
-      showList: [],
-    };
-  },
-  mounted() {
-    this.cateListAjax();
-  },
-  methods: {
-    cateListAjax() {
-      let that = this;
-      this.$http.get("apis/web/getAllType", {}).then((res) => {
-        that.totalList = res.data.data;
-        that.dataCount = that.totalList.length;
-        if (that.dataCount < this.pageSize) {
-          that.showList = that.totalList;
+          [
+            h("span", [h("span", data.title)]),
+            h(
+              "span",
+              {
+                style: {
+                  display: "inline-block",
+                  float: "right",
+                  marginRight: "32px"
+                }
+              },
+              [
+                h(Button, {
+                  props: Object.assign({}, this.buttonProps, {
+                    icon: "ios-add"
+                  }),
+                  style: {
+                    marginRight: "8px"
+                  },
+                  on: {
+                    click: () => {
+                      this.append(data);
+                    }
+                  }
+                }),
+                h(Button, {
+                  props: Object.assign({}, this.buttonProps, {
+                    icon: "ios-color-wand"
+                  }),
+                  on: {
+                    click: () => {
+                      this.edit(data);
+                    }
+                  }
+                })
+              ]
+            ),
+            //添加框
+            // h(
+            //   "span",
+            //   {
+            //     class: "hhhaha",
+            //     style: {
+            //       display: "inline-block",
+            //       lineHeight: "1.6rem",
+            //       width: "100%",
+            //       cursor: "pointer",
+            //       position: "absolute",
+            //       left: "280px",
+            //     },
+            //   },
+            //   [
+            //     h("span", [
+            //       h(`${data.addState ? "input" : ""}`, {
+            //         attrs: {
+            //           value: `${data.addState ? data.title : ""}`,
+            //           autofocus: "true",
+            //         },
+            //         style: {
+            //           width: "12rem",
+            //           cursor: "auto",
+            //           borderRadius: "5px",
+            //           outline: "none",
+            //           border: "1px #ccc solid",
+            //         },
+            //         on: {
+            //           change: (event) => {
+            //             this.inputContent = event.target.value;
+            //           },
+            //         },
+            //       }),
+            //     ]),
+            //     h(
+            //       `${data.addState ? "span" : ""}`,
+            //       {
+            //         style: {
+            //           marginLeft: ".5rem",
+            //           height: "27px",
+            //           display: "inline-block",
+            //         },
+            //       },
+            //       [
+            //         // 确认按钮
+            //         h(Button, {
+            //           props: Object.assign({}, this.buttonProps, {
+            //             icon: "md-checkmark",
+            //           }),
+            //           style: {
+            //             border: 0,
+            //             background: "rgba(0,0,0,0)",
+            //             fontSize: "1.3rem",
+            //             outline: "none",
+            //             height: "27px",
+            //             lineHeight: "27px",
+            //           },
+            //           on: {
+            //             click: (event) => {
+            //               // this.confirmTheChange(data);
+            //             },
+            //           },
+            //         }),
+            //         // 取消按钮
+            //         h(Button, {
+            //           props: Object.assign({}, this.buttonProps, {
+            //             icon: "md-close",
+            //           }),
+            //           style: {
+            //             border: "0",
+            //             background: "rgba(0,0,0,0)",
+            //             fontSize: "1.3rem",
+            //             outline: "none",
+            //             height: "27px",
+            //             lineHeight: "27px",
+            //           },
+            //           on: {
+            //             click: () => {
+            //               this.CancelChange(data);
+            //             },
+            //           },
+            //         }),
+            //       ]
+            //     ),
+            //   ]
+            // ),
+
+            //修改框
+            h(
+              "div",
+              {
+                class: "editDiv"
+              },
+              [
+                h("span", [
+                  h(`${data.editState ? "input" : ""}`, {
+                    attrs: {
+                      value: `${data.editState ? data.title : ""}`,
+                      autofocus: "true"
+                    },
+                    style: {
+                      width: "12rem",
+                      cursor: "auto",
+                      borderRadius: "5px",
+                      outline: "none",
+                      border: "1px #ccc solid"
+                    },
+                    on: {
+                      change: event => {
+                        this.inputContent = event.target.value;
+                      }
+                    }
+                  })
+                ]),
+                h(
+                  `${data.editState ? "span" : ""}`,
+                  {
+                    style: {
+                      marginLeft: ".5rem",
+                      height: "27px",
+                      display: "inline-block"
+                    }
+                  },
+                  [
+                    // 确认按钮
+                    h(Button, {
+                      props: Object.assign({}, this.buttonProps, {
+                        icon: "md-checkmark"
+                      }),
+                      style: {
+                        // marginRight: '8px',
+                        border: 0,
+                        background: "rgba(0,0,0,0)",
+                        fontSize: "1.3rem",
+                        outline: "none",
+                        height: "27px",
+                        lineHeight: "27px"
+                      },
+                      on: {
+                        click: event => {
+                          this.confirmTheChange(data);
+                        }
+                      }
+                    }),
+                    // 取消按钮
+                    h(Button, {
+                      props: Object.assign({}, this.buttonProps, {
+                        icon: "md-close"
+                      }),
+                      style: {
+                        border: "0",
+                        background: "rgba(0,0,0,0)",
+                        fontSize: "1.3rem",
+                        outline: "none",
+                        height: "27px",
+                        lineHeight: "27px"
+                      },
+                      on: {
+                        click: () => {
+                          this.CancelChange(data);
+                        }
+                      }
+                    })
+                  ]
+                )
+              ]
+            )
+            //修改框结束
+          ]
+        );
+      }
+    },
+    setStates(data) {
+      var editState = data.editState;
+      // var addState = data.addState;
+      if (editState) {
+        this.$set(data, "editState", false);
+      } else {
+        this.$set(data, "editState", true);
+      }
+      // if (addState) {
+      //   this.$set(data, "addState", false);
+      // } else {
+      //   this.$set(data, "addState", true);
+      // }
+    },
+    append(data) {
+      event.stopPropagation();
+      const children = data.children || [];
+      children.push({
+        title: "新建节点",
+        expand: true
+      });
+      this.$set(data, "children", children);
+      // this.setStates(data);
+      this.appendAjax(data);
+    },
+    edit(data) {
+      console.log("edit");
+      event.stopPropagation();
+      this.inputContent = data.title;
+      this.oldName = data.title;
+      this.setStates(data);
+    },
+    //确认修改树节点
+    confirmTheChange(data) {
+      if (!this.inputContent) {
+        this.$Notice.warning({
+          title: "当前输入有误"
+        });
+      } else {
+        if (this.oldName !== this.inputContent) {
+          this.$Modal.confirm({
+            title: "提示",
+            content: `您确定将“${this.oldName}”重命名为“${this.inputContent}”吗？`,
+            onOk: () => {
+              data.title = this.inputContent;
+              this.$Message.info("修改成功");
+              this.editAjax(data);
+            },
+            onCancel: () => {
+              this.$Message.info("取消");
+            }
+          });
+          this.setStates(data);
         } else {
-          that.showList = that.totalList.slice(0, this.pageSize);
+          this.setStates(data);
         }
-        console.log(res.data.data);
+      }
+    },
+    //取消修改树节点
+    CancelChange(data) {
+      this.$Notice.info({
+        title: "取消修改"
+      });
+      this.setStates(data);
+    },
+    appendAjax(data) {
+      console.log("add---", data);
+      let params = {
+        pId: data.value,
+        tName: data.title
+      };
+      console.log(params);
+      // let that = this
+      this.$http.get("/apis/web/insertType", params).then(res => {
+        console.log(res);
       });
     },
-    changePage(index) {
-      var _start = (index - 1) * this.pageSize;
-      var _end = index * this.pageSize;
-      this.showList = this.totalList.slice(_start, _end);
-    },
-  },
+    editAjax(data) {
+      console.log("edit---", data);
+      let params = {
+        tId: data.value,
+        tName: data.title
+      };
+      console.log(params);
+      this.$http.get("/apis/web/updateType", params).then(res => {
+        console.log(res);
+      });
+    }
+  }
 };
 </script>
-<style scoped>
-.cate {
-  position: relative;
+<style>
+.editDiv:hover .btnNone {
+  display: inline-block;
 }
-.ivu-btn-large {
-  font-size: 25px !important;
+
+.editDiv:hover {
+  font-weight: 600;
+  color: #275cd4;
 }
-.addButton {
-  margin-bottom: 10px;
-}
-.addInput {
-  position: absolute;
-  top: 5px;
-  left: 50px;
-}
-.slide-fade-enter-active {
-  transition: all 0.3s ease;
-}
-.slide-fade-leave-active {
-  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.slide-fade-enter,
-.slide-fade-leave-to {
-  transform: translateX(10px);
-  opacity: 0;
+.ivu-tree ul li {
+  list-style: none;
+  /* margin: 8px 0; */
+  padding: 0;
+  white-space: nowrap;
+  outline: none;
 }
 </style>

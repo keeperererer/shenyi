@@ -28,8 +28,4 @@ export default {
 .ivu-table-cell {
   text-overflow: initial;
 }
-.ivu-modal-content {
-  border: 1px solid #ccc;
-  box-shadow: none;
-}
 </style>

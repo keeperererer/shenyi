@@ -1,13 +1,5 @@
 <template>
-  <div>
-    <div class="search">
-      <Input
-        v-model="searchValue"
-        placeholder="请输入ERP分类..."
-        style="width: 200px;"
-      />
-      <Button @click="searchPro">搜索</Button>
-    </div>
+  <div class="search">
     <Table
       border
       ref="selection"
@@ -36,31 +28,99 @@
   </div>
 </template>
 <script>
-import { Table, Button, Input, Page } from "view-design";
 import $ from "jquery";
 export default {
-  components: {
-    Table,
-    Button,
-    Input,
-    Page
-  },
   data() {
     return {
-      searchValue: "",
+      tabList: [
+        {
+          type: "selection",
+          width: 50,
+          align: "center",
+          fixed: "left"
+        },
+        {
+          title: "缩略图",
+          key: "picUrl",
+          render: (h, params) => {
+            let url = `https://shenyi.looyeagee.cn/uploads/${params.row.pId}/${params.row.picUrl[0]}`;
+            return h("img", {
+              attrs: {
+                src: url
+              },
+              style: {
+                width: "100px"
+              }
+            });
+          }
+        },
+        {
+          title: "名称",
+          key: "sMingCheng"
+        },
+        {
+          title: "标准",
+          key: "sBiaoZhun"
+        },
+        {
+          title: "规格",
+          key: "sGuiGe"
+        },
+        {
+          title: "机械性能",
+          key: "sJiXieXingNeng"
+        },
+        {
+          title: "表面处理",
+          key: "sBiaoMianChuLi"
+        },
+        {
+          title: "材质",
+          key: "sCaiZhi"
+        },
+        {
+          title: "ERP分类",
+          key: "sERPFenLei"
+        },
+        {
+          title: "ERP物料编码",
+          key: "sERPWuLiaoBianMa"
+        },
+        {
+          title: "操作",
+          key: "down",
+          width: 70,
+          fixed: "right",
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      event.stopPropagation();
+                      this.downLoad(params);
+                    }
+                  }
+                },
+                "下载"
+              )
+            ]);
+          }
+        }
+      ],
       showList: [],
-      totalList: [], //所有数据
-      attributeAllList: [], //Attribute所有数据
-      attributeList: [], //Attribute extra = 0的数据
-      tabList: [],
+      totalList: [],
       pageSize: 10, //每页显示多少条
-      dataCount: 0, //所有数据的长度
-      pid: []
+      dataCount: 0 //所有数据的长度
     };
   },
   mounted() {
-    this.attributeListAjax();
-    this.allListAjax();
+    this.getProAjax();
   },
   methods: {
     //全选按钮
@@ -126,16 +186,6 @@ export default {
       console.log(data);
       this.$router.push({ name: "detail", params: data });
     },
-    searchPro() {
-      let that = this;
-      let params = {
-        SERPFenLeiId: that.searchValue
-      };
-      this.$http.get("apis/wx/searchByType", params).then(res => {
-        console.log(res.data.data);
-        this.$router.push({ name: "searchProduction", params: res.data.data });
-      });
-    },
     deletePro() {
       let params = {
         pId: this.pid
@@ -145,88 +195,6 @@ export default {
         console.log(res);
         this.$router.go(0);
       });
-    },
-    attributeListAjax() {
-      let that = this;
-      this.$http.get("apis/web/getAttribute", {}).then(res => {
-        that.attributeAllList = res.data.data;
-        that.attributeAllList.forEach(item => {
-          if (item.extra == 0) {
-            that.attributeList.push(item);
-          }
-        });
-        that.attributeList.forEach(item => {
-          that.tabList.push({
-            title: item.sidName,
-            key: item.fieldName
-          });
-        });
-
-        that.tabList.unshift({
-          title: "缩略图",
-          key: "picUrl",
-          render: (h, params) => {
-            let url = `https://shenyi.looyeagee.cn/uploads/${params.row.pId}/${params.row.picUrl[0]}`;
-            return h("img", {
-              attrs: {
-                src: url
-              },
-              style: {
-                width: "100px"
-              }
-            });
-          }
-        });
-        that.tabList.unshift({
-          type: "selection",
-          width: 50,
-          align: "center",
-          fixed: "left"
-        });
-        that.tabList.push({
-          title: "操作",
-          key: "down",
-          width: 70,
-          fixed: "right",
-          render: (h, params) => {
-            return h("div", [
-              h(
-                Button,
-                {
-                  props: {
-                    type: "primary",
-                    size: "small"
-                  },
-                  on: {
-                    click: () => {
-                      event.stopPropagation();
-                      this.downLoad(params);
-                    }
-                  }
-                },
-                "下载"
-              )
-            ]);
-          }
-        });
-      });
-    },
-    allListAjax() {
-      let that = this;
-      this.$http.get("apis/wx/all", {}).then(res => {
-        that.totalList = res.data.data;
-        that.dataCount = that.totalList.length;
-        if (that.dataCount < this.pageSize) {
-          that.showList = that.totalList;
-        } else {
-          that.showList = that.totalList.slice(0, this.pageSize);
-        }
-      });
-    },
-    changePage(index) {
-      var _start = (index - 1) * this.pageSize;
-      var _end = index * this.pageSize;
-      this.showList = this.totalList.slice(_start, _end);
     },
     downLoad(params) {
       let down = params.row.attachUrl;
@@ -248,18 +216,28 @@ export default {
       } else {
         this.$Message.info("没有附件提供下载");
       }
+    },
+    getProAjax() {
+      let that = this;
+      let params = {
+        SERPFenLeiId: this.$route.params.SERPFenLeiId
+      };
+      this.$http.get("apis/wx/searchByType", params).then(res => {
+        that.totalList = res.data.data;
+        that.dataCount = that.totalList.length;
+        if (that.dataCount < this.pageSize) {
+          that.showList = that.totalList;
+        } else {
+          that.showList = that.totalList.slice(0, this.pageSize);
+        }
+      });
+    },
+    changePage(index) {
+      var _start = (index - 1) * this.pageSize;
+      var _end = index * this.pageSize;
+      this.showList = this.totalList.slice(_start, _end);
     }
   }
 };
 </script>
-<style scoped>
-.search {
-  margin-bottom: 10px;
-}
-.button {
-  margin-top: 10px;
-}
-.page {
-  margin-top: 20px;
-}
-</style>
+<style scoped></style>

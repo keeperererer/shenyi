@@ -22,6 +22,7 @@
               </template>
               <MenuItem name="2-1" to="/addProduction">添加产品</MenuItem>
               <MenuItem name="2-2" to="/production">查看产品</MenuItem>
+              <!-- <MenuItem name="2-3" to="/searchProduction">搜索产品</MenuItem> -->
             </Submenu>
             <MenuItem name="3-1" to="/maintain"
               ><Icon type="ios-clipboard" />维护字段管理</MenuItem

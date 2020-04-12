@@ -5,6 +5,7 @@ import Login from "@/components/user/login";
 import Category from "@/components/category/category";
 import Production from "@/components/production/production";
 import addProduction from "@/components/production/addProduction";
+import searchProduction from "@/components/production/searchProduction";
 import detail from "@/components/production/productionDetail";
 import Extra from "@/components/extra/extra";
 import Maintain from "@/components/maintain/maintain";
@@ -54,6 +55,14 @@ export default new Router({
           component: Production,
           meta: {
             order: "2-2"
+          }
+        },
+        {
+          path: "searchProduction",
+          name: "searchProduction",
+          component: searchProduction,
+          meta: {
+            order: "2-3"
           }
         },
         {

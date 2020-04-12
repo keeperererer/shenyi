@@ -27,8 +27,8 @@ export default {
     return {
       users: {
         name: "",
-        password: "",
-      },
+        password: ""
+      }
     };
   },
   created() {},
@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     handleSubmit(name) {
-      this.$refs[name].validate((valid) => {
+      this.$refs[name].validate(valid => {
         if (valid) {
           // this.$Message.success("Success!");
         } else {
@@ -51,7 +51,7 @@ export default {
     loginAjax() {
       let params = {
         name: this.users.name.trim(),
-        pwd: this.users.password.trim(),
+        pwd: this.users.password.trim()
       };
       // this.$http.post("/apis/web/login", params).then((res) => {
       //   let obj = res.data.data;
@@ -62,21 +62,21 @@ export default {
       //     this.$router.push({ path: "/" });
       //   }
       // });
-      this.$http.post("/apis/web/login", params).then((res) => {
+      this.$http.post("/apis/web/login", params).then(res => {
         let obj = res.data.data;
         // console.log(res.data);
         let setTime = 30 * 24 * 60 * 60 * 1000;
         Storage.setItem({
           name: "token",
           value: obj,
-          expires: setTime,
+          expires: setTime
         });
         if (res.data.msg == "获取成功") {
           this.$router.push({ path: "/" });
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 <style scoped>

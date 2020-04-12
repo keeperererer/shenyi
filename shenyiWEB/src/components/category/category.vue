@@ -18,8 +18,8 @@ export default {
   data() {
     return {
       treeData: [],
-      // editState: false,
-      addState: false,
+      editState: false,
+      // addState: false,
       buttonProps: {
         type: "default",
         size: "small"
@@ -135,106 +135,11 @@ export default {
                 })
               ]
             ),
-            //添加框
-            // h(
-            //   "span",
-            //   {
-            //     class: "hhhaha",
-            //     style: {
-            //       display: "inline-block",
-            //       lineHeight: "1.6rem",
-            //       width: "100%",
-            //       cursor: "pointer",
-            //       position: "absolute",
-            //       left: "280px",
-            //     },
-            //   },
-            //   [
-            //     h("span", [
-            //       h(`${data.addState ? "input" : ""}`, {
-            //         attrs: {
-            //           value: `${data.addState ? data.title : ""}`,
-            //           autofocus: "true",
-            //         },
-            //         style: {
-            //           width: "12rem",
-            //           cursor: "auto",
-            //           borderRadius: "5px",
-            //           outline: "none",
-            //           border: "1px #ccc solid",
-            //         },
-            //         on: {
-            //           change: (event) => {
-            //             this.inputContent = event.target.value;
-            //           },
-            //         },
-            //       }),
-            //     ]),
-            //     h(
-            //       `${data.addState ? "span" : ""}`,
-            //       {
-            //         style: {
-            //           marginLeft: ".5rem",
-            //           height: "27px",
-            //           display: "inline-block",
-            //         },
-            //       },
-            //       [
-            //         // 确认按钮
-            //         h(Button, {
-            //           props: Object.assign({}, this.buttonProps, {
-            //             icon: "md-checkmark",
-            //           }),
-            //           style: {
-            //             border: 0,
-            //             background: "rgba(0,0,0,0)",
-            //             fontSize: "1.3rem",
-            //             outline: "none",
-            //             height: "27px",
-            //             lineHeight: "27px",
-            //           },
-            //           on: {
-            //             click: (event) => {
-            //               // this.confirmTheChange(data);
-            //             },
-            //           },
-            //         }),
-            //         // 取消按钮
-            //         h(Button, {
-            //           props: Object.assign({}, this.buttonProps, {
-            //             icon: "md-close",
-            //           }),
-            //           style: {
-            //             border: "0",
-            //             background: "rgba(0,0,0,0)",
-            //             fontSize: "1.3rem",
-            //             outline: "none",
-            //             height: "27px",
-            //             lineHeight: "27px",
-            //           },
-            //           on: {
-            //             click: () => {
-            //               this.CancelChange(data);
-            //             },
-            //           },
-            //         }),
-            //       ]
-            //     ),
-            //   ]
-            // ),
             //修改框
             h(
-              "span",
+              "div",
               {
-                class: "hhhaha",
-                style: {
-                  display: "inline-block",
-                  lineHeight: "1.6rem",
-                  width: "100%",
-                  cursor: "pointer",
-                  position: "absolute",
-                  left: "280px"
-                }
+                class: "editDiv"
               },
               [
                 h("span", [
@@ -310,37 +215,33 @@ export default {
                 )
               ]
             )
+            //修改框结束
           ]
         );
       }
     },
     setStates(data) {
       var editState = data.editState;
-      // var addState = data.addState;
+      var addState = data.addState;
       if (editState) {
         this.$set(data, "editState", false);
       } else {
         this.$set(data, "editState", true);
       }
-      // if (addState) {
-      //   this.$set(data, "addState", false);
-      // } else {
-      //   this.$set(data, "addState", true);
-      // }
+      if (addState) {
+        this.$set(data, "addState", false);
+      } else {
+        this.$set(data, "addState", true);
+      }
     },
     append(data) {
       event.stopPropagation();
       const children = data.children || [];
       children.push({
-        title: "新建节点",
+        title: data.title,
         expand: true
       });
-      // children.push({
-      //   title: data.title,
-      //   expand: true,
-      // });
       this.$set(data, "children", children);
-      // this.setStates(data);
       this.appendAjax(data);
     },
     edit(data) {
@@ -383,26 +284,42 @@ export default {
       });
       this.setStates(data);
     },
+    //确认添加子节点
+    confirmAdd() {},
+    //取消添加子节点
+    CancelAdd(data) {
+      this.$Notice.info({
+        title: "取消添加"
+      });
+    },
     appendAjax(data) {
       console.log("add---", data);
+      if (data.value == undefined) {
+        data.value = 0;
+      }
       let params = {
         pId: data.value,
         tName: data.title
       };
       console.log(params);
-      // let that = this
+      let that = this;
       this.$http.get("/apis/web/insertType", params).then(res => {
+        this.$router.go(0);
         console.log(res);
       });
     },
     editAjax(data) {
       console.log("edit---", data);
+      if (data.value == undefined) {
+        data.value = 0;
+      }
       let params = {
         tId: data.value,
         tName: data.title
       };
       console.log(params);
       this.$http.get("/apis/web/updateType", params).then(res => {
+        this.$router.go(0);
         console.log(res);
       });
     }
@@ -410,12 +327,11 @@ export default {
 };
 </script>
 <style>
-/* .hhhaha:hover{color:aqua} */
-.hhhaha:hover .btnNone {
+.editDiv:hover .btnNone {
   display: inline-block;
 }
 
-.hhhaha:hover {
+.editDiv:hover {
   font-weight: 600;
   color: #275cd4;
 }
