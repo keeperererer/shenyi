@@ -56,6 +56,8 @@ export default {
   methods: {
     attributeListAjax() {
       let that = this;
+      that.tabList = [];
+      console.log("获取", that.tabList);
       this.$http.get("apis/web/getAttribute", {}).then(res => {
         that.attributeAllList = res.data.data;
         that.attributeAllList.forEach(item => {
@@ -79,7 +81,8 @@ export default {
         name: that.inputValue
       };
       this.$http.get("apis/web/insertExtra", params).then(res => {
-        this.$router.go(0);
+        console.log("修改", that.tabList);
+        this.attributeListAjax();
       });
     },
     clickEdit(sid) {
@@ -93,7 +96,7 @@ export default {
         name: that.newName
       };
       this.$http.get("apis/web/editExtra", params).then(res => {
-        this.$router.go(0);
+        //  this.attributeListAjax();
       });
       this.$Message.info("修改成功");
     },
