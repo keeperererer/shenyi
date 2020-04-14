@@ -3,7 +3,7 @@
     <div class="search">
       <Input
         v-model="searchValue"
-        placeholder="请输入ERP分类..."
+        placeholder="多字段以空格隔开..."
         style="width: 200px;"
       />
       <Button @click="searchPro">搜索</Button>
@@ -49,18 +49,18 @@ export default {
     return {
       searchValue: "",
       showList: [],
-      totalList: [], //所有数据
+      // totalList: [], //所有数据
       attributeAllList: [], //Attribute所有数据
       attributeList: [], //Attribute extra = 0的数据
       tabList: [],
-      pageSize: 10, //每页显示多少条
+      pageSize: 6, //每页显示多少条
       dataCount: 0, //所有数据的长度
       pid: []
     };
   },
   mounted() {
     this.attributeListAjax();
-    this.allListAjax();
+    this.changePage();
   },
   methods: {
     //全选按钮
@@ -69,20 +69,17 @@ export default {
     },
     //单选一行
     selectOneRow(row) {
-      console.log(row);
       let rowData = row;
       let len = row.length;
       let arrPid = [];
       rowData.forEach(item => {
         arrPid.push(item.pId);
-        // console.log(this.pid);
       });
       this.pid = [...new Set(arrPid)];
       this.pid = this.pid
         .toString()
         .split(",")
         .join(" ");
-      console.log("单行pID", this.pid);
     },
     //表单全选
     selectAllRow() {
@@ -98,18 +95,15 @@ export default {
         .toString()
         .split(",")
         .join(" ");
-      console.log("表单全选pId", this.pid);
     },
     //取消全选
     cancelAllRow() {
       if (this.pid) {
         this.pid = [];
       }
-      console.log("取消全选", this.pid);
     },
     //取消一行
     cancelOneRow(row) {
-      // console.log("取消某一行", row);
       if (this.pid) {
         this.pid = [];
       }
@@ -120,30 +114,22 @@ export default {
         .toString()
         .split(",")
         .join(" ");
-      console.log("取消某一行后的pid", this.pid);
     },
     detailOnClick(data) {
-      console.log(data);
       this.$router.push({ name: "detail", params: data });
     },
     searchPro() {
-      let that = this;
-      let params = {
-        SERPFenLeiId: that.searchValue
-      };
-      this.$http.get("apis/wx/searchByType", params).then(res => {
-        console.log(res.data.data);
-        this.$router.push({ name: "searchProduction", params: res.data.data });
+      this.$router.push({
+        name: "searchProduction",
+        query: { text: this.searchValue }
       });
     },
     deletePro() {
       let params = {
         pId: this.pid
       };
-      console.log("删除成功", params);
       this.$http.post("/apis/productManage/delProducts", params).then(res => {
-        console.log(res);
-        this.$router.go(0);
+        this.changePage();
       });
     },
     attributeListAjax() {
@@ -211,22 +197,18 @@ export default {
         });
       });
     },
-    allListAjax() {
+    changePage(currentPage = 1) {
+      this.$Loading.start();
       let that = this;
-      this.$http.get("apis/wx/all", {}).then(res => {
-        that.totalList = res.data.data;
-        that.dataCount = that.totalList.length;
-        if (that.dataCount < this.pageSize) {
-          that.showList = that.totalList;
-        } else {
-          that.showList = that.totalList.slice(0, this.pageSize);
-        }
+      let params = {
+        size: that.pageSize,
+        current: currentPage
+      };
+      this.$http.get("apis/wx/all", params).then(res => {
+        this.$Loading.finish();
+        that.showList = res.data.data.data;
+        that.dataCount = res.data.data.page.totalCount;
       });
-    },
-    changePage(index) {
-      var _start = (index - 1) * this.pageSize;
-      var _end = index * this.pageSize;
-      this.showList = this.totalList.slice(_start, _end);
     },
     downLoad(params) {
       let down = params.row.attachUrl;
@@ -257,9 +239,9 @@ export default {
   margin-bottom: 10px;
 }
 .button {
-  margin-top: 10px;
+  margin-top: 20px;
 }
 .page {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 </style>

@@ -115,12 +115,12 @@ export default {
       ],
       showList: [],
       totalList: [],
-      pageSize: 10, //每页显示多少条
+      pageSize: 6, //每页显示多少条
       dataCount: 0 //所有数据的长度
     };
   },
   mounted() {
-    this.getProAjax();
+    this.changePage();
   },
   methods: {
     //全选按钮
@@ -192,7 +192,6 @@ export default {
       };
       console.log("删除成功", params);
       this.$http.post("/apis/productManage/delProducts", params).then(res => {
-        console.log(res);
         this.$router.go(0);
       });
     },
@@ -217,27 +216,28 @@ export default {
         this.$Message.info("没有附件提供下载");
       }
     },
-    getProAjax() {
+    changePage(currentPage = 1) {
+      this.$Loading.start();
       let that = this;
       let params = {
-        SERPFenLeiId: this.$route.params.SERPFenLeiId
+        text: this.$route.query.text,
+        size: that.pageSize,
+        current: currentPage
       };
-      this.$http.get("apis/wx/searchByType", params).then(res => {
-        that.totalList = res.data.data;
-        that.dataCount = that.totalList.length;
-        if (that.dataCount < this.pageSize) {
-          that.showList = that.totalList;
-        } else {
-          that.showList = that.totalList.slice(0, this.pageSize);
-        }
+      this.$http.get("apis/wx/search", params).then(res => {
+        this.$Loading.finish();
+        that.showList = res.data.data.data;
+        that.dataCount = res.data.data.page.totalCount;
       });
-    },
-    changePage(index) {
-      var _start = (index - 1) * this.pageSize;
-      var _end = index * this.pageSize;
-      this.showList = this.totalList.slice(_start, _end);
     }
   }
 };
 </script>
-<style scoped></style>
+<style scoped>
+.button {
+  margin-top: 20px;
+}
+.page {
+  margin-top: 10px;
+}
+</style>

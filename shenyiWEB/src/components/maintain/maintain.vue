@@ -92,6 +92,7 @@ export default {
       });
     },
     async mainTableAjax() {
+      this.$Loading.start();
       let that = this;
       for (let i = 0; i < that.attTbName.length; i++) {
         let params = {
@@ -100,6 +101,7 @@ export default {
         await this.$http
           .get("apis/web/getMaintainableTables", params)
           .then(res => {
+            this.$Loading.finish();
             let mianData = res.data.data;
             let mianDataJson = JSON.parse(JSON.stringify(mianData));
             that.mianTable.push(JSON.parse(JSON.stringify(mianDataJson)));

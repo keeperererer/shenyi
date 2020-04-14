@@ -1,5 +1,6 @@
 <template>
   <div class="extra">
+    <!-- <Spin></Spin> -->
     <div class="add">
       <Button
         size="large"
@@ -55,10 +56,10 @@ export default {
   mounted() {},
   methods: {
     attributeListAjax() {
+      this.$Loading.start();
       let that = this;
-      that.tabList = [];
-      console.log("获取", that.tabList);
       this.$http.get("apis/web/getAttribute", {}).then(res => {
+        this.$Loading.finish();
         that.attributeAllList = res.data.data;
         that.attributeAllList.forEach(item => {
           if (item.extra == 1 && item.maintenance == 0) {
@@ -81,8 +82,8 @@ export default {
         name: that.inputValue
       };
       this.$http.get("apis/web/insertExtra", params).then(res => {
-        console.log("修改", that.tabList);
-        this.attributeListAjax();
+        console.log("添加", that.tabList);
+        this.$router.go(0);
       });
     },
     clickEdit(sid) {
@@ -96,7 +97,7 @@ export default {
         name: that.newName
       };
       this.$http.get("apis/web/editExtra", params).then(res => {
-        //  this.attributeListAjax();
+        this.$router.go(0);
       });
       this.$Message.info("修改成功");
     },

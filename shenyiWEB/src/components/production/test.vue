@@ -20,7 +20,7 @@
         标准号:<span>{{ product.sBiaoZhun }}</span>
       </p>
       <p>
-        分类:<span>{{ product.type }}</span>
+        类别:<span>{{ product.type }}</span>
       </p>
       <p>
         规格:<span>{{ product.sGuiGe }}</span>
@@ -37,7 +37,7 @@
     </div>
     <div style="clear:both"></div>
     <Button type="primary" @click="modal1 = true">修改</Button>
-    <Modal v-model="modal1" title="修改产品">
+    <Modal v-model="modal1" title="修改产品" @on-cancel="cancel" fullscreen>
       <div class="editPro">
         <Form
           ref="formValidate"
@@ -46,11 +46,7 @@
           :label-width="150"
         >
           <FormItem label="分类">
-            <!-- <Cascader
-              :data="types"
-              @on-change="handleChange"
-              v-model="product.type"
-            ></Cascader> -->
+            <!--            <Cascader :data="types" @on-change="handleChange" v-model="fenLei"></Cascader>-->
             <p>{{ product.type }}</p>
           </FormItem>
           <FormItem label="产品名称" prop="name">
@@ -133,30 +129,10 @@
               placeholder="输入ERP物料编码"
             ></Input>
           </FormItem>
-          <FormItem label="是否替换附件">
+          <FormItem label="附件">
             <input type="file" id="attach" />
           </FormItem>
           <FormItem label="上传产品实例图">
-            <div
-              v-for="(pic, index) in formValidate.pics"
-              :key="index"
-              class="editPics"
-            >
-              <Icon
-                type="md-close"
-                class="editPicsIcon"
-                @click="delpic(product.pId, pic)"
-              />
-              <img
-                :src="
-                  'https://shenyi.looyeagee.cn/uploads/' +
-                    product.pId +
-                    '/' +
-                    pic
-                "
-                alt="产品"
-              />
-            </div>
             <input
               type="file"
               multiple
@@ -176,7 +152,6 @@
           </FormItem>
         </Form>
       </div>
-      <div slot="footer"></div>
     </Modal>
   </div>
 </template>
@@ -213,8 +188,7 @@ export default {
         ERPclass: "",
         ERPcode: "",
         check: false,
-        disabled: true,
-        pics: []
+        disabled: true
       },
       ruleValidate: {
         name: [
@@ -237,6 +211,9 @@ export default {
     this.loadTypes();
   },
   methods: {
+    ok() {
+      // this.$Message.info("Clicked ok");
+    },
     cancel() {
       // this.$Message.info("Clicked cancel");
     },
@@ -279,7 +256,6 @@ export default {
       this.formValidate.texture = product.sCaiZhiId;
       this.formValidate.ERPclass = product.sERPFenLeiId;
       this.formValidate.ERPcode = product.sERPWuLiaoBianMa;
-      this.formValidate.pics = product.picUrl;
     },
     dealResponse(response, successFunction) {
       if (response.data.errorCode !== SUCCESS_CODE) {
@@ -350,7 +326,6 @@ export default {
           this.dealResponse(response, function() {
             that.$Message.success(response.data.msg);
             that.getProduct();
-            that.modal1 = false;
           });
         });
     },
@@ -380,19 +355,6 @@ export default {
 
     handleChange(value, selectedData) {
       this.formValidate.city = value[value.length - 1];
-    },
-    delpic(pId, pic) {
-      console.log("删除图片", pId + pic);
-      let params = {
-        pId,
-        fileName: pic
-      };
-      console.log("params", params);
-      this.$http.post("apis/productManage/delOneFile", params).then(res => {
-        // console.log(res);
-        that.$Message.success("删除成功");
-        that.getProduct();
-      });
     }
   }
 };
@@ -428,18 +390,5 @@ h2 {
 .detail_right span {
   font-weight: 300;
   margin-left: 10px;
-}
-.editPics {
-  /* width: 100px; */
-  display: inline-block;
-  background: rgba(79, 81, 82, 0.2);
-  margin-right: 5px;
-  margin-bottom: 5 px;
-}
-.editPics img {
-  width: 100px;
-}
-.editPicsIcon:hover {
-  background-color: #ccc;
 }
 </style>
