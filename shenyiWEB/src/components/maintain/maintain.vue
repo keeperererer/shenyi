@@ -132,6 +132,7 @@ export default {
       };
       this.$http.get("apis/web/editaintainableTables", params).then(res => {
         this.$router.go(0);
+        // this.attributeListAjax();
       });
       this.$Message.info("修改成功");
     },

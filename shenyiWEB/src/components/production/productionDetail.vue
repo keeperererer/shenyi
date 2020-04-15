@@ -1,7 +1,7 @@
 <template>
   <div class="detail">
     <div class="detail_left">
-      <Carousel autoplay v-model="value2" loop :autoplay-speed="5000">
+      <Carousel v-model="value2" arrow="never">
         <CarouselItem v-for="(pic, index) in product.picUrl" :key="index">
           <div class="demo-carousel">
             <img
@@ -20,6 +20,7 @@
         标准号:<span>{{ product.sBiaoZhun }}</span>
       </p>
       <p>
+        <!-- 分类:<span>{{ product.type }}</span> -->
         分类:<span>{{ product.type }}</span>
       </p>
       <p>
@@ -46,12 +47,9 @@
           :label-width="150"
         >
           <FormItem label="分类">
-            <!-- <Cascader
-              :data="types"
-              @on-change="handleChange"
-              v-model="product.type"
-            ></Cascader> -->
-            <p>{{ product.type }}</p>
+            <span style="font-size:12px;color:#ccc;">无需修改，请勿选择</span>
+            <Cascader :data="types" @on-change="handleChange"></Cascader>
+            <!-- <p>{{ product.type }}</p> -->
           </FormItem>
           <FormItem label="产品名称" prop="name">
             <Input
@@ -228,6 +226,18 @@ export default {
       files: null
     };
   },
+  beforeRouteLeave(to, from, next) {
+    if (to.name == "Production" || to.name == "searchProduction") {
+      if (!from.meta.keepAlive) {
+        to.meta.keepAlive = true;
+      }
+    } else {
+      from.meta.keepALive = false;
+      to.meta.keepAlive = false;
+      this.$destroy();
+    }
+    next();
+  },
   mounted() {
     this.getProduct();
     this.loadSelection("t_biao_mian_chu_li", this.surfaceTreats);
@@ -242,7 +252,7 @@ export default {
     },
     getProduct() {
       this.$http
-        .get("/apis/wx/products", { pId: this.$route.params.pId })
+        .get("/apis/wx/products", { pId: this.$route.query.pId })
         .then(response => {
           let that = this;
           this.dealResponse(response, function() {
@@ -250,8 +260,8 @@ export default {
             if (products.length > 0) {
               that.product = products[0];
               that.loadTypeByTid(that.product.tId);
-              console.log(that.product);
               that.loadFormValidate(that.product);
+              console.log("product", that.product);
             }
           });
         });

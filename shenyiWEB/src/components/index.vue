@@ -36,7 +36,10 @@
           <Content
             :style="{ padding: '24px', minHeight: '580px', background: '#fff' }"
           >
-            <router-view></router-view>
+            <keep-alive>
+              <router-view v-if="$route.meta.keepAlive"></router-view>
+            </keep-alive>
+              <router-view v-if="!$route.meta.keepAlive"></router-view>
           </Content>
         </Layout>
       </Layout>

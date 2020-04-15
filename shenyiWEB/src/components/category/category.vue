@@ -304,7 +304,6 @@ export default {
       console.log(params);
       let that = this;
       this.$http.get("/apis/web/insertType", params).then(res => {
-        // this.$router.go(0);
         console.log(res);
         //添加的时候重新获取一下数据
         this.treeDataAjax();

@@ -74,6 +74,7 @@ export default {
             sid: item.sid
           });
         });
+        that.tabList = JSON.parse(JSON.stringify(that.tabList));
       });
     },
     addName() {

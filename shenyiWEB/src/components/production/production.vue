@@ -37,7 +37,6 @@
 </template>
 <script>
 import { Table, Button, Input, Page } from "view-design";
-import $ from "jquery";
 export default {
   components: {
     Table,
@@ -116,7 +115,12 @@ export default {
         .join(" ");
     },
     detailOnClick(data) {
-      this.$router.push({ name: "detail", params: data });
+      console.log(data);
+      this.$router.push({
+        name: "detail",
+        params: data,
+        query: { pId: data.pId }
+      });
     },
     searchPro() {
       this.$router.push({
@@ -129,6 +133,7 @@ export default {
         pId: this.pid
       };
       this.$http.post("/apis/productManage/delProducts", params).then(res => {
+        this.$Message.info("删除成功");
         this.changePage();
       });
     },
@@ -213,20 +218,11 @@ export default {
     downLoad(params) {
       let down = params.row.attachUrl;
       if (down) {
+        let a = document.createElement("a");
         // let url = `https://codeload.github.com/douban/douban-client/legacy.zip/master`;
-        let url = `https://shenyi.looyeagee.cn/uploads/${params.row.pId}/${params.row.attachUrl}`;
-        var form = $("<form></form>")
-          .attr("action", url)
-          .attr("method", "get");
-        form.append(
-          $("<input></input>").attr("type", "hidden")
-          // .attr("name", "Authorization")
-          // .attr("value", sessionId)
-        );
-        form
-          .appendTo("body")
-          .submit()
-          .remove();
+        a.href = `https://shenyi.looyeagee.cn/uploads/${params.row.pId}/${params.row.attachUrl}`;
+        a.download = "w3logo";
+        a.click();
       } else {
         this.$Message.info("没有附件提供下载");
       }

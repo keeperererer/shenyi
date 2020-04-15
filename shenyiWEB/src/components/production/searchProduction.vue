@@ -28,7 +28,6 @@
   </div>
 </template>
 <script>
-import $ from "jquery";
 export default {
   data() {
     return {
@@ -196,25 +195,11 @@ export default {
       });
     },
     downLoad(params) {
-      let down = params.row.attachUrl;
-      if (down) {
-        // let url = `https://codeload.github.com/douban/douban-client/legacy.zip/master`;
-        let url = `https://shenyi.looyeagee.cn/uploads/${params.row.pId}/${params.row.attachUrl}`;
-        var form = $("<form></form>")
-          .attr("action", url)
-          .attr("method", "get");
-        form.append(
-          $("<input></input>").attr("type", "hidden")
-          // .attr("name", "Authorization")
-          // .attr("value", sessionId)
-        );
-        form
-          .appendTo("body")
-          .submit()
-          .remove();
-      } else {
-        this.$Message.info("没有附件提供下载");
-      }
+      let a = document.createElement("a");
+      // let url = `https://codeload.github.com/douban/douban-client/legacy.zip/master`;
+      a.href = `https://shenyi.looyeagee.cn/uploads/${params.row.pId}/${params.row.attachUrl}`;
+      a.download = "w3logo";
+      a.click();
     },
     changePage(currentPage = 1) {
       this.$Loading.start();

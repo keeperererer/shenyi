@@ -54,7 +54,9 @@ export default new Router({
           name: "Production",
           component: Production,
           meta: {
-            order: "2-2"
+            order: "2-2",
+            keepAlive: true,
+            isUseCache: false
           }
         },
         {
@@ -62,7 +64,8 @@ export default new Router({
           name: "searchProduction",
           component: searchProduction,
           meta: {
-            order: "2-3"
+            order: "2-3",
+            keepAlive: true
           }
         },
         {
