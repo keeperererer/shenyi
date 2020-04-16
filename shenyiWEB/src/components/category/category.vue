@@ -347,7 +347,6 @@ export default {
       });
       this.$set(parentdata, "children", children);
       console.log("appendData", parentdata);
-      // this.appendAjax(data);
     },
     edit(data) {
       console.log("edit");
@@ -395,7 +394,6 @@ export default {
       console.log("confirmAddParentData", parentdata);
       console.log("confirmAddData", data);
       console.log("addInputContent", this.addInputContent);
-
       this.appendAjax(parentdata);
     },
     //取消添加子节点
@@ -403,7 +401,7 @@ export default {
       this.$Notice.info({
         title: "取消添加"
       });
-      this.appendAjax(parentdata);
+      this.treeDataAjax();
       this.setAddStates(parentdata);
     },
     appendAjax(parentdata) {
@@ -435,8 +433,7 @@ export default {
       };
       console.log(params);
       this.$http.get("/apis/web/updateType", params).then(res => {
-        // this.$router.go(0);
-        console.log(res);
+        this.treeDataAjax();
       });
     }
   }
