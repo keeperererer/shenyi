@@ -49,6 +49,16 @@ export default {
         children: data
       };
       this.treeData = [obj];
+      this.treeExpand(this.treeData);
+    },
+    treeExpand(data) {
+      for (const i of data) {
+        this.$set(i, "expand", true);
+        if (i.children) {
+          i.children = this.treeExpand(i.children);
+        }
+      }
+      return data;
     },
     renderContent(h, { root, node, data }) {
       if (data.isParent) {
