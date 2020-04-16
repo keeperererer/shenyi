@@ -19,13 +19,14 @@ export default {
     return {
       treeData: [],
       editState: false,
-      // addState: false,
+      addState: false,
       buttonProps: {
         type: "default",
         size: "small"
       },
       //输入框要修改的内容
       inputContent: "",
+      addInputContent: "",
       //修改前的TreeNode名称
       oldName: ""
     };
@@ -221,28 +222,122 @@ export default {
       }
     },
     setStates(data) {
+      console.log(data);
       var editState = data.editState;
-      var addState = data.addState;
+      console.log("editState", editState);
       if (editState) {
         this.$set(data, "editState", false);
       } else {
         this.$set(data, "editState", true);
       }
+    },
+    setAddStates(data) {
+      console.log(data);
+      var addState = data.addState;
+      console.log("addState", addState);
       if (addState) {
         this.$set(data, "addState", false);
       } else {
         this.$set(data, "addState", true);
       }
     },
-    append(data) {
+    append(parentdata) {
       event.stopPropagation();
-      const children = data.children || [];
+      const children = parentdata.children || [];
+      this.setAddStates(parentdata);
+      console.log("append", parentdata.addState);
+      console.log("addInputContent", this.addInputContent);
       children.push({
-        title: data.title,
-        expand: true
+        title: this.addInputContent,
+        expand: true,
+        addState: parentdata.addState,
+        render: (h, { root, node, data }) => {
+          return h(
+            "div",
+            {
+              class: "addDiv"
+            },
+            [
+              h("span", [
+                h(`${parentdata.addState ? "input" : ""}`, {
+                  attrs: {
+                    value: `${parentdata.addState ? parentdata.title : ""}`,
+                    autofocus: "true"
+                  },
+                  style: {
+                    width: "12rem",
+                    cursor: "auto",
+                    borderRadius: "5px",
+                    outline: "none",
+                    border: "1px #ccc solid"
+                  },
+                  on: {
+                    change: event => {
+                      this.addInputContent = event.target.value;
+                    }
+                  }
+                })
+              ]),
+              h(
+                `${parentdata.addState ? "span" : ""}`,
+                {
+                  style: {
+                    marginLeft: ".5rem",
+                    height: "27px",
+                    display: "inline-block"
+                  }
+                },
+                [
+                  // 确认按钮
+                  h(Button, {
+                    props: Object.assign({}, this.buttonProps, {
+                      icon: "md-checkmark"
+                    }),
+                    style: {
+                      // marginRight: '8px',
+                      border: 0,
+                      background: "rgba(0,0,0,0)",
+                      fontSize: "1.3rem",
+                      outline: "none",
+                      height: "27px",
+                      lineHeight: "27px"
+                    },
+                    on: {
+                      click: event => {
+                        console.log("确认添加");
+                        this.confirmAdd(parentdata, data);
+                      }
+                    }
+                  }),
+                  // 取消按钮
+                  h(Button, {
+                    props: Object.assign({}, this.buttonProps, {
+                      icon: "md-close"
+                    }),
+                    style: {
+                      border: "0",
+                      background: "rgba(0,0,0,0)",
+                      fontSize: "1.3rem",
+                      outline: "none",
+                      height: "27px",
+                      lineHeight: "27px"
+                    },
+                    on: {
+                      click: () => {
+                        console.log("取消添加");
+                        this.cancelAdd(parentdata);
+                      }
+                    }
+                  })
+                ]
+              )
+            ]
+          );
+        }
       });
-      this.$set(data, "children", children);
-      this.appendAjax(data);
+      this.$set(parentdata, "children", children);
+      console.log("appendData", parentdata);
+      // this.appendAjax(data);
     },
     edit(data) {
       console.log("edit");
@@ -285,24 +380,34 @@ export default {
       this.setStates(data);
     },
     //确认添加子节点
-    confirmAdd() {},
+    confirmAdd(parentdata, data) {
+      this.$Message.info("添加成功");
+      console.log("confirmAddParentData", parentdata);
+      console.log("confirmAddData", data);
+      console.log("addInputContent", this.addInputContent);
+
+      this.appendAjax(parentdata);
+    },
     //取消添加子节点
-    CancelAdd(data) {
+    cancelAdd(parentdata) {
       this.$Notice.info({
         title: "取消添加"
       });
+      this.appendAjax(parentdata);
+      this.setAddStates(parentdata);
     },
-    appendAjax(data) {
-      console.log("add---", data);
-      if (data.value == undefined) {
-        data.value = 0;
+    appendAjax(parentdata) {
+      let that = this;
+      console.log("add---", parentdata);
+      if (parentdata.value == undefined) {
+        parentdata.value = 0;
       }
       let params = {
-        pId: data.value,
-        tName: data.title
+        pId: parentdata.value,
+        tName: that.addInputContent
       };
       console.log(params);
-      let that = this;
+
       this.$http.get("/apis/web/insertType", params).then(res => {
         console.log(res);
         //添加的时候重新获取一下数据

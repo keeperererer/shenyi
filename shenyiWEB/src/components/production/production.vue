@@ -219,7 +219,7 @@ export default {
       let down = params.row.attachUrl;
       if (down) {
         let a = document.createElement("a");
-        // let url = `https://codeload.github.com/douban/douban-client/legacy.zip/master`;
+        // a.href = `https://codeload.github.com/douban/douban-client/legacy.zip/master`;
         a.href = `https://shenyi.looyeagee.cn/uploads/${params.row.pId}/${params.row.attachUrl}`;
         a.download = "w3logo";
         a.click();
