@@ -15,13 +15,12 @@
       </Carousel>
     </div>
     <div class="detail_right">
-      <h2>{{ product.sMingCheng }}</h2>
+      <h2>产品名称：{{ product.sMingCheng }}</h2>
       <p>
-        标准号:<span>{{ product.sBiaoZhun }}</span>
+        分类:<span>{{ product.tName }}</span>
       </p>
       <p>
-        <!-- 分类:<span>{{ product.type }}</span> -->
-        分类:<span>{{ product.type }}</span>
+        标准号:<span>{{ product.sBiaoZhun }}</span>
       </p>
       <p>
         规格:<span>{{ product.sGuiGe }}</span>
@@ -35,10 +34,16 @@
       <p>
         材质:<span>{{ product.sCaiZhi }}</span>
       </p>
+      <p>
+        ERP分类:<span>{{ product.sERPFenLei }}</span>
+      </p>
+      <p>
+        ERP物料编码:<span>{{ product.sERPWuLiaoBianMa }}</span>
+      </p>
     </div>
     <div style="clear:both"></div>
     <Button type="primary" @click="modal1 = true">修改</Button>
-    <Modal v-model="modal1" title="修改产品">
+    <Modal v-model="modal1" title="修改产品" fullscreen>
       <div class="editPro">
         <Form
           ref="formValidate"
@@ -47,9 +52,9 @@
           :label-width="150"
         >
           <FormItem label="分类">
-            <span style="font-size:12px;color:#ccc;">无需修改，请勿选择</span>
+            <p>{{ product.type }}</p>
+            <span style="font-size:12px;color:#ccc;">如无需修改，请勿选择</span>
             <Cascader :data="types" @on-change="handleChange"></Cascader>
-            <!-- <p>{{ product.type }}</p> -->
           </FormItem>
           <FormItem label="产品名称" prop="name">
             <Input
@@ -138,7 +143,7 @@
             <div
               v-for="(pic, index) in formValidate.pics"
               :key="index"
-              class="editPics"
+              id="maskPic"
             >
               <Icon
                 type="md-close"
@@ -293,6 +298,7 @@ export default {
     },
     dealResponse(response, successFunction) {
       if (response.data.errorCode !== SUCCESS_CODE) {
+        console.log(response);
         this.$Message.error(response.data.msg);
       } else {
         successFunction();
@@ -398,10 +404,16 @@ export default {
         fileName: pic
       };
       console.log("params", params);
+
       this.$http.post("apis/productManage/delOneFile", params).then(res => {
-        // console.log(res);
-        that.$Message.success("删除成功");
-        that.getProduct();
+        console.log(res);
+        // let mask = document.getElementById("maskPic");
+        // console.log(mask);
+        // mask.innerHTML = "";
+        // let mask = document.getElementById("maskPic");
+        // mask.setAttribute("class", "maskPic");
+        this.$Message.success({ content: "删除成功", duration: 3 });
+        this.getProduct();
       });
     }
   }
@@ -439,17 +451,20 @@ h2 {
   font-weight: 300;
   margin-left: 10px;
 }
-.editPics {
+#maskPic {
   /* width: 100px; */
   display: inline-block;
   background: rgba(79, 81, 82, 0.2);
   margin-right: 5px;
   margin-bottom: 5 px;
 }
-.editPics img {
+#maskPic img {
   width: 100px;
 }
 .editPicsIcon:hover {
   background-color: #ccc;
+}
+.maskPic {
+  background-color: red !important;
 }
 </style>
