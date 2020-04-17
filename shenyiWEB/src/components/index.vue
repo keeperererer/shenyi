@@ -32,14 +32,18 @@
             >
           </Menu>
         </Sider>
-        <Layout :style="{ padding: '0 24px 24px' }">
+        <Layout :style="{ padding: '0 24px' }">
           <Content
-            :style="{ padding: '24px', minHeight: '580px', background: '#fff' }"
+            :style="{
+              padding: '10px 24px 24px 24px',
+              minHeight: '580px',
+              background: '#fff'
+            }"
           >
             <keep-alive>
               <router-view v-if="$route.meta.keepAlive"></router-view>
             </keep-alive>
-              <router-view v-if="!$route.meta.keepAlive"></router-view>
+            <router-view v-if="!$route.meta.keepAlive"></router-view>
           </Content>
         </Layout>
       </Layout>

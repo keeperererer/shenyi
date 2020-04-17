@@ -1,5 +1,6 @@
 <template>
   <div class="category">
+    <div style="color:#ccc">点击添加即为添加其子分类</div>
     <Tree
       :data="treeData"
       :render="renderContent"
@@ -8,17 +9,19 @@
   </div>
 </template>
 <script>
-import { Tree, Button, Icon } from "view-design";
+// import { Tree, Button, Icon } from "view-design";
 export default {
-  components: {
-    Tree,
-    Button,
-    Icon
-  },
+  // components: {
+  //   Tree,
+  //   Button,
+  //   Icon
+  // },
   data() {
     return {
       treeData: [],
+      //修改状态，是否修改
       editState: false,
+      //添加状态，是否添加
       addState: false,
       buttonProps: {
         type: "default",
@@ -26,6 +29,7 @@ export default {
       },
       //输入框要修改的内容
       inputContent: "",
+      //添加框要添加的内容
       addInputContent: "",
       //修改前的TreeNode名称
       oldName: ""
@@ -35,12 +39,16 @@ export default {
     this.treeDataAjax();
   },
   methods: {
+    //请求数据
     treeDataAjax() {
+      this.$Loading.start();
       let that = this;
       this.$http.get("apis/web/types", {}).then(res => {
+        this.$Loading.finish();
         this.renderTree(res.data.data);
       });
     },
+    //处理数据
     renderTree(data) {
       let obj = {
         title: "分类",
@@ -51,6 +59,7 @@ export default {
       this.treeData = [obj];
       this.treeExpand(this.treeData);
     },
+    //由于第二级节点没有expand不可展开，于是添加此函数增加expand属性
     treeExpand(data) {
       for (const i of data) {
         this.$set(i, "expand", true);
@@ -60,7 +69,9 @@ export default {
       }
       return data;
     },
+    //渲染树结构
     renderContent(h, { root, node, data }) {
+      //判断是否为顶级节点
       if (data.isParent) {
         return h(
           "span",
@@ -82,20 +93,25 @@ export default {
                 }
               },
               [
-                h(Button, {
-                  props: Object.assign({}, this.buttonProps, {
-                    icon: "ios-add",
-                    type: "primary"
-                  }),
-                  style: {
-                    width: "64px"
-                  },
-                  on: {
-                    click: () => {
-                      this.append(data);
+                h(
+                  "Button",
+                  {
+                    props: Object.assign({}, this.buttonProps, {
+                      icon: "ios-add",
+                      type: "primary"
+                    }),
+                    style: {
+                      width: "148px",
+                      height: "30px"
+                    },
+                    on: {
+                      click: () => {
+                        this.append(data);
+                      }
                     }
-                  }
-                })
+                  },
+                  "添加"
+                )
               ]
             )
           ]
@@ -121,32 +137,46 @@ export default {
                 }
               },
               [
-                h(Button, {
-                  props: Object.assign({}, this.buttonProps, {
-                    icon: "ios-add"
-                  }),
-                  style: {
-                    marginRight: "8px"
+                h(
+                  "Button",
+                  {
+                    props: Object.assign({}, this.buttonProps, {
+                      icon: "ios-add"
+                    }),
+                    style: {
+                      marginRight: "8px",
+                      width: "70px",
+                      height: "30px"
+                    },
+                    on: {
+                      click: () => {
+                        this.append(data);
+                      }
+                    }
                   },
-                  on: {
-                    click: () => {
-                      this.append(data);
+                  "添加"
+                ),
+                h(
+                  "Button",
+                  {
+                    props: Object.assign({}, this.buttonProps, {
+                      icon: "ios-color-wand"
+                    }),
+                    style: {
+                      width: "70px",
+                      height: "30px"
+                    },
+                    on: {
+                      click: () => {
+                        this.edit(data);
+                      }
                     }
-                  }
-                }),
-                h(Button, {
-                  props: Object.assign({}, this.buttonProps, {
-                    icon: "ios-color-wand"
-                  }),
-                  on: {
-                    click: () => {
-                      this.edit(data);
-                    }
-                  }
-                })
+                  },
+                  "修改"
+                )
               ]
             ),
-            //修改框
+            //修改时出现的修改框
             h(
               "div",
               {
@@ -184,12 +214,11 @@ export default {
                   },
                   [
                     // 确认按钮
-                    h(Button, {
+                    h("Button", {
                       props: Object.assign({}, this.buttonProps, {
                         icon: "md-checkmark"
                       }),
                       style: {
-                        // marginRight: '8px',
                         border: 0,
                         background: "rgba(0,0,0,0)",
                         fontSize: "1.3rem",
@@ -204,7 +233,7 @@ export default {
                       }
                     }),
                     // 取消按钮
-                    h(Button, {
+                    h("Button", {
                       props: Object.assign({}, this.buttonProps, {
                         icon: "md-close"
                       }),
@@ -231,6 +260,7 @@ export default {
         );
       }
     },
+    //更改修改状态
     setStates(data) {
       console.log(data);
       var editState = data.editState;
@@ -241,6 +271,7 @@ export default {
         this.$set(data, "editState", true);
       }
     },
+    //更改添加状态
     setAddStates(data) {
       console.log(data);
       var addState = data.addState;
@@ -251,6 +282,7 @@ export default {
         this.$set(data, "addState", true);
       }
     },
+    //添加节点
     append(parentdata) {
       event.stopPropagation();
       const children = parentdata.children || [];
@@ -299,7 +331,7 @@ export default {
                 },
                 [
                   // 确认按钮
-                  h(Button, {
+                  h("Button", {
                     props: Object.assign({}, this.buttonProps, {
                       icon: "md-checkmark"
                     }),
@@ -320,7 +352,7 @@ export default {
                     }
                   }),
                   // 取消按钮
-                  h(Button, {
+                  h("Button", {
                     props: Object.assign({}, this.buttonProps, {
                       icon: "md-close"
                     }),
@@ -348,6 +380,7 @@ export default {
       this.$set(parentdata, "children", children);
       console.log("appendData", parentdata);
     },
+    //修改节点内容
     edit(data) {
       console.log("edit");
       event.stopPropagation();
@@ -355,11 +388,11 @@ export default {
       this.oldName = data.title;
       this.setStates(data);
     },
-    //确认修改树节点
+    //确认修改节点
     confirmTheChange(data) {
-      if (!this.inputContent) {
+      if (!this.inputContent.trim()) {
         this.$Notice.warning({
-          title: "当前输入有误"
+          title: "输入不能为空"
         });
       } else {
         if (this.oldName !== this.inputContent) {
@@ -372,7 +405,7 @@ export default {
               this.editAjax(data);
             },
             onCancel: () => {
-              this.$Message.info("取消");
+              this.$Message.info("取消修改");
             }
           });
           this.setStates(data);
@@ -404,6 +437,7 @@ export default {
       this.treeDataAjax();
       this.setAddStates(parentdata);
     },
+    //添加节点的前后交互
     appendAjax(parentdata) {
       let that = this;
       console.log("add---", parentdata);
@@ -422,6 +456,7 @@ export default {
         this.treeDataAjax();
       });
     },
+    //编辑节点的前端交互
     editAjax(data) {
       console.log("edit---", data);
       if (data.value == undefined) {

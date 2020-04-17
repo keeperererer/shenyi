@@ -109,33 +109,33 @@
   </div>
 </template>
 <script>
-import {
-  Form,
-  FormItem,
-  Select,
-  Option,
-  Input,
-  Button,
-  Checkbox,
-  Upload,
-  Icon
-} from "view-design";
+// import {
+//   Form,
+//   FormItem,
+//   Select,
+//   Option,
+//   Input,
+//   Button,
+//   Checkbox,
+//   Upload,
+//   Icon
+// } from "view-design";
 import axios from "axios";
 
 var SUCCESS_CODE = 0;
 
 export default {
-  components: {
-    Form,
-    FormItem,
-    Select,
-    Option,
-    Input,
-    Button,
-    Checkbox,
-    Upload,
-    Icon
-  },
+  // components: {
+  //   Form,
+  //   FormItem,
+  //   Select,
+  //   Option,
+  //   Input,
+  //   Button,
+  //   Checkbox,
+  //   Upload,
+  //   Icon
+  // },
   data() {
     return {
       surfaceTreats: [],
@@ -280,6 +280,4 @@ export default {
   }
 };
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>

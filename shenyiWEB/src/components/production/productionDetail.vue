@@ -1,5 +1,8 @@
 <template>
   <div class="detail">
+    <Button @click="backToList" class="back" type="primary" ghost
+      ><Icon type="md-arrow-back" />返回</Button
+    >
     <div class="detail_left">
       <Carousel v-model="value2" arrow="never">
         <CarouselItem v-for="(pic, index) in product.picUrl" :key="index">
@@ -42,8 +45,11 @@
       </p>
     </div>
     <div style="clear:both"></div>
-    <Button type="primary" @click="modal1 = true">修改</Button>
-    <Modal v-model="modal1" title="修改产品" fullscreen>
+    <Button type="primary" @click="modal1 = true"
+      ><Icon type="ios-color-wand" />修改</Button
+    >
+    <!-- 弹出的修改框 -->
+    <Modal v-model="modal1" title="修改产品">
       <div class="editPro">
         <Form
           ref="formValidate"
@@ -57,22 +63,19 @@
             <Cascader :data="types" @on-change="handleChange"></Cascader>
           </FormItem>
           <FormItem label="产品名称" prop="name">
-            <Input
-              v-model="formValidate.name"
-              placeholder="输入产品名称"
-            ></Input>
+            <Input v-model="formValidate.name" placeholder="输入产品名称" />
           </FormItem>
           <FormItem label="标准号" prop="standardNum">
             <Input
               v-model="formValidate.standardNum"
               placeholder="输入标准号"
-            ></Input>
+            />
           </FormItem>
           <FormItem label="规格" prop="specification">
             <Input
               v-model="formValidate.specification"
               placeholder="输入规格"
-            ></Input>
+            />
           </FormItem>
           <FormItem label="机械机能" prop="mechanicalFun">
             <Select
@@ -134,7 +137,7 @@
             <Input
               v-model="formValidate.ERPcode"
               placeholder="输入ERP物料编码"
-            ></Input>
+            />
           </FormItem>
           <FormItem label="是否替换附件">
             <input type="file" id="attach" />
@@ -184,19 +187,20 @@
   </div>
 </template>
 <script>
-import { Button, Carousel, CarouselItem, Modal } from "view-design";
+// import { Button, Carousel, CarouselItem, Modal } from "view-design";
 import axios from "axios";
 
 const SUCCESS_CODE = 0;
 export default {
-  components: {
-    Carousel,
-    CarouselItem,
-    Button,
-    Modal
-  },
+  // components: {
+  //   Carousel,
+  //   CarouselItem,
+  //   Button,
+  //   Modal
+  // },
   data() {
     return {
+      fromPage: "",
       value2: 0,
       modal1: false,
       product: {},
@@ -205,6 +209,7 @@ export default {
       ERPclasses: [],
       mechanicalFuns: [],
       types: [],
+      //修改页面中的默认数据
       formValidate: {
         name: "",
         city: "",
@@ -231,19 +236,36 @@ export default {
       files: null
     };
   },
-  beforeRouteLeave(to, from, next) {
-    if (to.name == "Production" || to.name == "searchProduction") {
-      if (!from.meta.keepAlive) {
-        to.meta.keepAlive = true;
-      }
-    } else {
-      from.meta.keepALive = false;
-      to.meta.keepAlive = false;
-      this.$destroy();
-    }
-    next();
-  },
+  // beforeRouteEnter(to, from, next) {
+  //   if (from.name == "Production") {
+  //     // this.fromPage = "列表页";
+  //     next(vm => {
+  //       vm.fromPage = "列表页";
+  //     });
+  //   }
+  //   if (from.name == "searchProduction") {
+  //     // this.fromPage = "搜索页";
+  //     next(vm => {
+  //       vm.fromPage = "搜索页";
+  //     });
+  //   }
+  // },
+  // beforeRouteLeave(to, from, next) {
+  //   if (to.name == "Production" || to.name == "searchProduction") {
+  //     if (!from.meta.keepAlive) {
+  //       to.meta.keepAlive = true;
+  //     }
+  //   } else {
+  //     from.meta.keepALive = false;
+  //     to.meta.keepAlive = false;
+  //     this.$destroy();
+  //   }
+  //   next();
+  // },
+  created() {},
   mounted() {
+    this.fromPage = this.$route.query.from;
+    console.log(this.fromPage);
     this.getProduct();
     this.loadSelection("t_biao_mian_chu_li", this.surfaceTreats);
     this.loadSelection("t_cai_zhi", this.textures);
@@ -255,6 +277,7 @@ export default {
     cancel() {
       // this.$Message.info("Clicked cancel");
     },
+    //详情页面数据的获取
     getProduct() {
       this.$http
         .get("/apis/wx/products", { pId: this.$route.query.pId })
@@ -341,10 +364,10 @@ export default {
         }
       }
     },
-
+    //修改产品
     editProduct() {
       let formData = new FormData();
-      formData.append("pId", this.$route.params.pId);
+      formData.append("pId", this.$route.query.pId);
       formData.append("sMingCheng", this.formValidate.name);
       formData.append("sBiaoMianChuLiId", this.formValidate.surfaceTreat);
       formData.append("sBiaoZhun", this.formValidate.standardNum);
@@ -407,14 +430,25 @@ export default {
 
       this.$http.post("apis/productManage/delOneFile", params).then(res => {
         console.log(res);
-        // let mask = document.getElementById("maskPic");
-        // console.log(mask);
-        // mask.innerHTML = "";
-        // let mask = document.getElementById("maskPic");
-        // mask.setAttribute("class", "maskPic");
         this.$Message.success({ content: "删除成功", duration: 3 });
         this.getProduct();
       });
+    },
+    //返回列表页
+    backToList() {
+      console.log("click");
+      if (this.fromPage == "list") {
+        this.$router.push({
+          name: "Production",
+          query: { page: this.$route.query.page }
+        });
+      }
+      if (this.fromPage == "searchList") {
+        this.$router.push({
+          name: "searchProduction",
+          query: { text: this.$route.query.text, page: this.$route.query.page }
+        });
+      }
     }
   }
 };
@@ -466,5 +500,9 @@ h2 {
 }
 .maskPic {
   background-color: red !important;
+}
+.back {
+  display: block;
+  margin-bottom: 14px;
 }
 </style>

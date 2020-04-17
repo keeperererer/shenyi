@@ -5,24 +5,24 @@ axios.defaults.timeout = 10000; //请求超时设置
 axios.defaults.withCredentials = false;
 
 axios.interceptors.request.use(
-  (config) => {
+  config => {
     config.headers["Content-Type"] = "application/x-www-form-urlencoded";
     if (Storage.getItem("token")) {
-      config.headers["authorization"] = "Bearer" + Storage.getItem("token");
+      config.headers["authorization"] = "Bearer " + Storage.getItem("token");
     }
     // console.log(Storage.getItem("token"));
     return config;
   },
-  (error) => {
+  error => {
     console.log(error);
     return Promise.error(error);
   }
 );
 axios.interceptors.response.use(
-  function (response) {
+  function(response) {
     return response;
   },
-  function (error) {
+  function(error) {
     console.log(error);
     return Promise.reject(error);
   }
@@ -33,24 +33,24 @@ var request = (options, res) => {
       url: options.url,
       method: options.method,
       data: stringify(options.body),
-      params: options.params,
+      params: options.params
     })
     .then(
-      (response) => {
+      response => {
         return response;
       },
-      (err) => {
+      err => {
         throw err;
       }
     )
-    .catch((error) => {
+    .catch(error => {
       throw error;
     });
 };
 
 export const http = {};
 const methods = ["get", "post", "put", "delete"];
-methods.forEach((method) => {
+methods.forEach(method => {
   http[method] = (url, params = {}) => {
     if (method === "get") {
       return request({ url, params, method });
@@ -71,10 +71,10 @@ export default function plugin(Vue) {
           get: http["get"],
           post: http["post"],
           put: http["put"],
-          delete: http["delete"],
+          delete: http["delete"]
         };
         return obj;
-      },
-    },
+      }
+    }
   });
 }

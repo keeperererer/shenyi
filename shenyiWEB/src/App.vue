@@ -28,4 +28,7 @@ export default {
 .ivu-table-cell {
   text-overflow: initial;
 }
+.ivu-table-row {
+  cursor: pointer;
+}
 </style>

@@ -1,6 +1,5 @@
 <template>
   <div class="extra">
-    <!-- <Spin></Spin> -->
     <div class="add">
       <Button
         size="large"
@@ -12,6 +11,7 @@
       <transition name="slide-fade">
         <div class="addInput" v-show="show">
           <Input
+            @keyup.enter.native="addName"
             v-model="inputValue"
             placeholder="请输入..."
             style="width: 200px;"
@@ -44,10 +44,13 @@ export default {
       newName: "",
       inputValue: "",
       show: false,
-      attributeAllList: [], //att中所有的数据
-      attributeList: [], //符合条件的数据
+      //att中所有的数据
+      attributeAllList: [],
+      //符合条件的数据
+      attributeList: [],
       tabList: [],
-      attTbName: [] //att中符合条件的tableName
+      //att中符合条件的tableName
+      attTbName: []
     };
   },
   created() {
@@ -86,6 +89,7 @@ export default {
         console.log("添加", that.tabList);
         this.$router.go(0);
       });
+      this.$Message.info("添加成功");
     },
     clickEdit(sid) {
       this.modal1 = true;

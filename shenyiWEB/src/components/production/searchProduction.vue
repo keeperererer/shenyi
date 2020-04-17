@@ -18,6 +18,7 @@
       <Button @click="handleSelectAll(false)">取消选择</Button>
     </div>
     <Page
+      :current="startRow"
       :total="dataCount"
       :page-size="pageSize"
       show-total
@@ -115,7 +116,11 @@ export default {
       showList: [],
       totalList: [],
       pageSize: 6, //每页显示多少条
-      dataCount: 0 //所有数据的长度
+      dataCount: 0, //所有数据的长度
+      pid: [],
+      keepPage: null,
+      backPage: null,
+      startRow: 1
     };
   },
   mounted() {
@@ -183,7 +188,16 @@ export default {
     },
     detailOnClick(data) {
       console.log(data);
-      this.$router.push({ name: "detail", params: data });
+      this.$router.push({
+        name: "detail",
+        params: data,
+        query: {
+          text: this.$route.query.text,
+          pId: data.pId,
+          page: this.keepPage,
+          from: "searchList"
+        }
+      });
     },
     deletePro() {
       let params = {
@@ -191,29 +205,63 @@ export default {
       };
       console.log("删除成功", params);
       this.$http.post("/apis/productManage/delProducts", params).then(res => {
-        this.$router.go(0);
+        this.$Message.info("删除成功");
+        //不要直接重置表格数据，只重新请求当前页的数据
+        this.changePage(this.startRow);
       });
     },
     downLoad(params) {
-      let a = document.createElement("a");
-      // let url = `https://codeload.github.com/douban/douban-client/legacy.zip/master`;
-      a.href = `https://shenyi.looyeagee.cn/uploads/${params.row.pId}/${params.row.attachUrl}`;
-      a.download = "w3logo";
-      a.click();
+      let down = params.row.attachUrl;
+      if (down) {
+        let a = document.createElement("a");
+        a.href = `https://shenyi.looyeagee.cn/uploads/${params.row.pId}/${params.row.attachUrl}`;
+        a.download = "w3logo";
+        a.click();
+      } else {
+        this.$Message.info("没有附件提供下载");
+      }
     },
     changePage(currentPage = 1) {
       this.$Loading.start();
       let that = this;
-      let params = {
-        text: this.$route.query.text,
-        size: that.pageSize,
-        current: currentPage
-      };
-      this.$http.get("apis/wx/search", params).then(res => {
-        this.$Loading.finish();
-        that.showList = res.data.data.data;
-        that.dataCount = res.data.data.page.totalCount;
-      });
+      that.backPage = this.$route.query.page;
+      console.log("backPage", that.backPage);
+      //指定当前页码 利用在删除产品那儿
+      that.startRow = currentPage;
+      //如果是详情回到列表记录页码 直接请求改页码的数据
+      if (that.backPage) {
+        currentPage = that.backPage;
+        //从详情回到列表 页码也要记录下来
+        that.startRow = that.backPage;
+        //保存当前页码 防止某页多次点击page不保存
+        that.keepPage = currentPage;
+        let params = {
+          text: this.$route.query.text,
+          size: that.pageSize,
+          current: currentPage
+        };
+        this.$http.get("apis/wx/search", params).then(res => {
+          this.$Loading.finish();
+          that.showList = res.data.data.data;
+          that.dataCount = res.data.data.page.totalCount;
+        });
+        that.backPage = null;
+        this.$route.query.page = null;
+      } else {
+        //正常请求
+        let params = {
+          text: this.$route.query.text,
+          size: that.pageSize,
+          current: currentPage
+        };
+        that.keepPage = currentPage;
+        console.log("keepPage", that.keepPage);
+        this.$http.get("apis/wx/search", params).then(res => {
+          this.$Loading.finish();
+          that.showList = res.data.data.data;
+          that.dataCount = res.data.data.page.totalCount;
+        });
+      }
     }
   }
 };

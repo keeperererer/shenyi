@@ -17,6 +17,6 @@ export default {
   align-items: center;
 }
 img {
-  margin-left: 200px;
+  margin-left: 20px;
 }
 </style>

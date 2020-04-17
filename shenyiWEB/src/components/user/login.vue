@@ -9,7 +9,12 @@
           </Input>
         </FormItem>
         <FormItem prop="password">
-          <Input type="password" v-model="users.password" placeholder="密码">
+          <Input
+            type="password"
+            v-model="users.password"
+            placeholder="密码"
+            @keyup.enter.native="handleSubmit('users')"
+          >
             <Icon type="ios-lock-outline" slot="prepend"></Icon>
           </Input>
         </FormItem>
