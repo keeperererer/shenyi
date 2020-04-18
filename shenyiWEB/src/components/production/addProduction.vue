@@ -13,16 +13,10 @@
         <Input v-model="formValidate.name" placeholder="输入产品名称"></Input>
       </FormItem>
       <FormItem label="标准号" prop="standardNum">
-        <Input
-          v-model="formValidate.standardNum"
-          placeholder="输入标准号"
-        ></Input>
+        <Input v-model="formValidate.standardNum" placeholder="输入标准号" />
       </FormItem>
       <FormItem label="规格" prop="specification">
-        <Input
-          v-model="formValidate.specification"
-          placeholder="输入规格"
-        ></Input>
+        <Input v-model="formValidate.specification" placeholder="输入规格" />
       </FormItem>
       <FormItem label="机械机能" prop="mechanicalFun">
         <Select
@@ -81,16 +75,18 @@
         </Select>
       </FormItem>
       <FormItem label="ERP物料编码" prop="ERPcode">
-        <Input
-          v-model="formValidate.ERPcode"
-          placeholder="输入ERP物料编码"
-        ></Input>
+        <Input v-model="formValidate.ERPcode" placeholder="输入ERP物料编码" />
       </FormItem>
-      <FormItem :label="item['sidName']"  v-for="(item, index) in fields" :key="index" :value="item.value">
+      <FormItem
+        :label="item['sidName']"
+        v-for="(item, index) in fields"
+        :key="index"
+        :value="item.value"
+      >
         <Input
           v-model="item['value']"
-          :placeholder="'请输入'+item['sidName']"
-        ></Input>
+          :placeholder="'请输入' + item['sidName']"
+        />
       </FormItem>
       <FormItem label="附件">
         <input type="file" id="attach" />
@@ -172,7 +168,7 @@ export default {
         ]
       },
       files: null,
-        fields: []
+      fields: []
     };
   },
 
@@ -285,32 +281,32 @@ export default {
       }
     },
 
-      getAttribute() {
-        this.$http.get("/apis/web/getAttribute").then(response => {
-            let that = this;
-            this.dealResponse(response, function () {
-                that.fields = [];
-                let fields = response.data.data;
-                for (let i=0; i<fields.length; ++i) {
-                    if (fields[i]['extra'] === 1) {
-                        that.fields.push({
-                            'fieldName': fields[i]['fieldName'],
-                            'sidName': fields[i]['sidName'],
-                            'value': ''
-                        });
-                    }
-                }
-            });
+    getAttribute() {
+      this.$http.get("/apis/web/getAttribute").then(response => {
+        let that = this;
+        this.dealResponse(response, function() {
+          that.fields = [];
+          let fields = response.data.data;
+          for (let i = 0; i < fields.length; ++i) {
+            if (fields[i]["extra"] === 1) {
+              that.fields.push({
+                fieldName: fields[i]["fieldName"],
+                sidName: fields[i]["sidName"],
+                value: ""
+              });
+            }
+          }
         });
-      },
+      });
+    },
 
-      getExtraFieldsJsonStr() {
-        let res = {};
-        for (let i = 0; i < this.fields.length; ++i) {
-            res[this.fields[i]['fieldName']] = this.fields[i]['value'];
-        }
-        return JSON.stringify(res);
+    getExtraFieldsJsonStr() {
+      let res = {};
+      for (let i = 0; i < this.fields.length; ++i) {
+        res[this.fields[i]["fieldName"]] = this.fields[i]["value"];
       }
+      return JSON.stringify(res);
+    }
   }
 };
 </script>

@@ -44,7 +44,7 @@
         ERP物料编码:<span>{{ product.sERPWuLiaoBianMa }}</span>
       </p>
       <p v-for="(item, index) in fields" :key="index" :value="item.value">
-        {{item['sidName']}}: <span>{{item['value']}}</span>
+        {{ item["sidName"] }}: <span>{{ item["value"] }}</span>
       </p>
     </div>
     <div style="clear:both"></div>
@@ -142,11 +142,16 @@
               placeholder="输入ERP物料编码"
             />
           </FormItem>
-          <FormItem :label="item['sidName']"  v-for="(item, index) in fields" :key="index" :value="item.value">
+          <FormItem
+            :label="item['sidName']"
+            v-for="(item, index) in fields"
+            :key="index"
+            :value="item.value"
+          >
             <Input
               v-model="item['value']"
-              :placeholder="'请输入'+item['sidName']"
-            ></Input>
+              :placeholder="'请输入' + item['sidName']"
+            />
           </FormItem>
           <FormItem label="是否替换附件">
             <input type="file" id="attach" />
@@ -243,7 +248,7 @@ export default {
         ]
       },
       files: null,
-        fields: []
+      fields: []
     };
   },
   // beforeRouteEnter(to, from, next) {
@@ -329,11 +334,11 @@ export default {
       this.formValidate.ERPcode = product.sERPWuLiaoBianMa;
       this.formValidate.pics = product.picUrl;
     },
-      loadExtraFields(extra) {
-        for (let i = 0; i < this.fields.length; ++i) {
-            this.fields[i]['value'] = extra[this.fields[i]['fieldName']];
-        }
-      },
+    loadExtraFields(extra) {
+      for (let i = 0; i < this.fields.length; ++i) {
+        this.fields[i]["value"] = extra[this.fields[i]["fieldName"]];
+      }
+    },
     dealResponse(response, successFunction) {
       if (response.data.errorCode !== SUCCESS_CODE) {
         this.$Message.error(response.data.msg);
@@ -430,32 +435,32 @@ export default {
       this.$refs[name].resetFields();
     },
 
-      getExtraFieldsJsonStr() {
-        let res = {};
-        for (let i = 0; i < this.fields.length; ++i) {
-            res[this.fields[i]['fieldName']] = this.fields[i]['value'];
-        }
-        return JSON.stringify(res);
-      },
+    getExtraFieldsJsonStr() {
+      let res = {};
+      for (let i = 0; i < this.fields.length; ++i) {
+        res[this.fields[i]["fieldName"]] = this.fields[i]["value"];
+      }
+      return JSON.stringify(res);
+    },
 
-      getAttribute() {
-        this.$http.get("/apis/web/getAttribute").then(response => {
-            let that = this;
-            this.dealResponse(response, function () {
-                that.fields = [];
-                let fields = response.data.data;
-                for (let i=0; i<fields.length; ++i) {
-                    if (fields[i]['extra'] === 1) {
-                        that.fields.push({
-                            'fieldName': fields[i]['fieldName'],
-                            'sidName': fields[i]['sidName'],
-                            'value': ''
-                        });
-                    }
-                }
-            });
+    getAttribute() {
+      this.$http.get("/apis/web/getAttribute").then(response => {
+        let that = this;
+        this.dealResponse(response, function() {
+          that.fields = [];
+          let fields = response.data.data;
+          for (let i = 0; i < fields.length; ++i) {
+            if (fields[i]["extra"] === 1) {
+              that.fields.push({
+                fieldName: fields[i]["fieldName"],
+                sidName: fields[i]["sidName"],
+                value: ""
+              });
+            }
+          }
         });
-      },
+      });
+    },
 
     handleChange(value, selectedData) {
       this.formValidate.city = value[value.length - 1];
