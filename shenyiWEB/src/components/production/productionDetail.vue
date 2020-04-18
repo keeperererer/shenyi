@@ -43,6 +43,9 @@
       <p>
         ERP物料编码:<span>{{ product.sERPWuLiaoBianMa }}</span>
       </p>
+      <p v-for="(item, index) in fields" :key="index" :value="item.value">
+        {{item['sidName']}}: <span>{{item['value']}}</span>
+      </p>
     </div>
     <div style="clear:both"></div>
     <Button type="primary" @click="modal1 = true"
@@ -139,6 +142,12 @@
               placeholder="输入ERP物料编码"
             />
           </FormItem>
+          <FormItem :label="item['sidName']"  v-for="(item, index) in fields" :key="index" :value="item.value">
+            <Input
+              v-model="item['value']"
+              :placeholder="'请输入'+item['sidName']"
+            ></Input>
+          </FormItem>
           <FormItem label="是否替换附件">
             <input type="file" id="attach" />
           </FormItem>
@@ -233,7 +242,8 @@ export default {
           }
         ]
       },
-      files: null
+      files: null,
+        fields: []
     };
   },
   // beforeRouteEnter(to, from, next) {
@@ -265,7 +275,7 @@ export default {
   created() {},
   mounted() {
     this.fromPage = this.$route.query.from;
-    console.log(this.fromPage);
+    this.getAttribute();
     this.getProduct();
     this.loadSelection("t_biao_mian_chu_li", this.surfaceTreats);
     this.loadSelection("t_cai_zhi", this.textures);
@@ -289,7 +299,7 @@ export default {
               that.product = products[0];
               that.loadTypeByTid(that.product.tId);
               that.loadFormValidate(that.product);
-              console.log("product", that.product);
+              that.loadExtraFields(that.product.extra);
             }
           });
         });
@@ -319,9 +329,13 @@ export default {
       this.formValidate.ERPcode = product.sERPWuLiaoBianMa;
       this.formValidate.pics = product.picUrl;
     },
+      loadExtraFields(extra) {
+        for (let i = 0; i < this.fields.length; ++i) {
+            this.fields[i]['value'] = extra[this.fields[i]['fieldName']];
+        }
+      },
     dealResponse(response, successFunction) {
       if (response.data.errorCode !== SUCCESS_CODE) {
-        console.log(response);
         this.$Message.error(response.data.msg);
       } else {
         successFunction();
@@ -377,7 +391,7 @@ export default {
       formData.append("sGuiGe", this.formValidate.specification);
       formData.append("sJiXieXingNengId", this.formValidate.mechanicalFun);
       formData.append("tId", this.formValidate.city);
-      formData.append("extraJson", "{}");
+      formData.append("extraJson", this.getExtraFieldsJsonStr());
       this.loadFiles(formData, "pictures", "pictures");
       this.loadFiles(formData, "attach", "attach");
       axios
@@ -408,7 +422,6 @@ export default {
           this.editProduct();
         } else {
           this.$Message.error("表单校验失败");
-          console.log(this.type);
         }
       });
     },
@@ -416,6 +429,33 @@ export default {
     handleReset(name) {
       this.$refs[name].resetFields();
     },
+
+      getExtraFieldsJsonStr() {
+        let res = {};
+        for (let i = 0; i < this.fields.length; ++i) {
+            res[this.fields[i]['fieldName']] = this.fields[i]['value'];
+        }
+        return JSON.stringify(res);
+      },
+
+      getAttribute() {
+        this.$http.get("/apis/web/getAttribute").then(response => {
+            let that = this;
+            this.dealResponse(response, function () {
+                that.fields = [];
+                let fields = response.data.data;
+                for (let i=0; i<fields.length; ++i) {
+                    if (fields[i]['extra'] === 1) {
+                        that.fields.push({
+                            'fieldName': fields[i]['fieldName'],
+                            'sidName': fields[i]['sidName'],
+                            'value': ''
+                        });
+                    }
+                }
+            });
+        });
+      },
 
     handleChange(value, selectedData) {
       this.formValidate.city = value[value.length - 1];

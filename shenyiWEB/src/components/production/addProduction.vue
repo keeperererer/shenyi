@@ -86,6 +86,12 @@
           placeholder="输入ERP物料编码"
         ></Input>
       </FormItem>
+      <FormItem :label="item['sidName']"  v-for="(item, index) in fields" :key="index" :value="item.value">
+        <Input
+          v-model="item['value']"
+          :placeholder="'请输入'+item['sidName']"
+        ></Input>
+      </FormItem>
       <FormItem label="附件">
         <input type="file" id="attach" />
       </FormItem>
@@ -165,7 +171,8 @@ export default {
           }
         ]
       },
-      files: null
+      files: null,
+        fields: []
     };
   },
 
@@ -175,6 +182,7 @@ export default {
     this.loadSelection("t_erp_fen_lei", this.ERPclasses);
     this.loadSelection("t_ji_xie_xing_neng", this.mechanicalFuns);
     this.loadTypes();
+    this.getAttribute();
   },
 
   methods: {
@@ -184,7 +192,6 @@ export default {
           this.addProduct();
         } else {
           this.$Message.error("表单校验失败");
-          console.log(this.type);
         }
       });
     },
@@ -209,7 +216,7 @@ export default {
       formData.append("sGuiGe", this.formValidate.specification);
       formData.append("sJiXieXingNengId", this.formValidate.mechanicalFun);
       formData.append("tId", this.formValidate.city);
-      formData.append("extraJson", "{}");
+      formData.append("extraJson", this.getExtraFieldsJsonStr());
       this.loadFiles(formData, "pictures", "pictures");
       this.loadFiles(formData, "attach", "attach");
       axios
@@ -276,7 +283,34 @@ export default {
           this._decorateTypes(types[i]["children"]);
         }
       }
-    }
+    },
+
+      getAttribute() {
+        this.$http.get("/apis/web/getAttribute").then(response => {
+            let that = this;
+            this.dealResponse(response, function () {
+                that.fields = [];
+                let fields = response.data.data;
+                for (let i=0; i<fields.length; ++i) {
+                    if (fields[i]['extra'] === 1) {
+                        that.fields.push({
+                            'fieldName': fields[i]['fieldName'],
+                            'sidName': fields[i]['sidName'],
+                            'value': ''
+                        });
+                    }
+                }
+            });
+        });
+      },
+
+      getExtraFieldsJsonStr() {
+        let res = {};
+        for (let i = 0; i < this.fields.length; ++i) {
+            res[this.fields[i]['fieldName']] = this.fields[i]['value'];
+        }
+        return JSON.stringify(res);
+      }
   }
 };
 </script>
