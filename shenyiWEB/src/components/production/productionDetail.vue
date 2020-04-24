@@ -281,7 +281,7 @@ export default {
   mounted() {
     this.fromPage = this.$route.query.from;
     this.getAttribute();
-    this.getProduct();
+
     this.loadSelection("t_biao_mian_chu_li", this.surfaceTreats);
     this.loadSelection("t_cai_zhi", this.textures);
     this.loadSelection("t_erp_fen_lei", this.ERPclasses);
@@ -458,6 +458,7 @@ export default {
               });
             }
           }
+          that.getProduct();
         });
       });
     },
